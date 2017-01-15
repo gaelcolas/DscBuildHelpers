@@ -1,7 +1,9 @@
 function Get-FailedDscResource
 {
     [cmdletbinding()]
-    param ($AllModuleResources)
+    param (
+        $AllModuleResources
+    )
 
     foreach ($resource in $AllModuleResources)
     {

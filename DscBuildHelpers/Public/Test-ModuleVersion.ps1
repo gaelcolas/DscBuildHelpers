@@ -1,4 +1,5 @@
 function Test-ModuleVersion {
+    [CmdletBinding()]
     param (
         [parameter(ValueFromPipeline, Mandatory)]
         [object]
@@ -11,8 +12,8 @@ function Test-ModuleVersion {
         $DestinationModule = join-path $Destination $InputObject.name
 
         if (test-path $DestinationModule) {
-            $CurrentModuleVersion = Get-ModuleVersion -Path $DestinationModule -asVersion
-            $NewModuleVersion = Get-ModuleVersion -Path $InputObject.fullname -asVersion
+            $CurrentModuleVersion = Get-DscResourceVersion -Path $DestinationModule -asVersion
+            $NewModuleVersion = Get-DscResourceVersion -Path $InputObject.fullname -asVersion
             if (($CurrentModuleVersion -eq $null) -or ($NewModuleVersion -gt $CurrentModuleVersion)) {
                 Write-Verbose "New module version is higher the the currently deployed module.  Replacing it."
                 $InputObject

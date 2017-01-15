@@ -1,11 +1,13 @@
-
 function Import-DataFile
 {
+    [CmdletBinding()]
     param (
         [Parameter(Mandatory)]
-        [string] $Path
+        [string] 
+        $Path
     )
-
+    
+    Write-Verbose -Message ('Opening file {0}' -f $Path)
     try
     {
         $content = Get-Content -Path $path -Raw -ErrorAction Stop
@@ -18,7 +20,7 @@ function Import-DataFile
         [string[]] $allowedVariables = @('PSScriptRoot')
 
         $scriptBlock.CheckRestrictedLanguage($allowedCommands, $allowedVariables, $true)
-
+        
         return & $scriptBlock
     }
     catch

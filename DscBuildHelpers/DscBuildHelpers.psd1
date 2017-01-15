@@ -41,10 +41,11 @@ PowerShellVersion = '5.0'
 
 # Modules that must be imported into the global environment prior to importing this module
 RequiredModules = @(
-    @{ ModuleName = 'Pester'; },
+    'Pester',
     'xDscResourceDesigner',
     'PSDesiredStateConfiguration',
-    'xPSDesiredStateConfiguration'
+    'xPSDesiredStateConfiguration',
+    'BuildHelpers'
 )
 
 # Assemblies that must be loaded prior to importing this module
@@ -63,9 +64,7 @@ RequiredModules = @(
 # NestedModules = @()
 
 # Functions to export from this module
-FunctionsToExport = 'Invoke-DscBuild',
-    'Get-DscResourceWmiClass',
-    'Remove-DscResourceWmiClass'
+FunctionsToExport = '*'
 
 # Cmdlets to export from this module
 #CmdletsToExport = '*'
@@ -92,6 +91,3 @@ FunctionsToExport = 'Invoke-DscBuild',
 # DefaultCommandPrefix = ''
 
 }
-
-
-

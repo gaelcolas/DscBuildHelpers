@@ -3,8 +3,8 @@ function Assert-DscModuleResourceIsValid
     [cmdletbinding()]
     param (
         [parameter(ValueFromPipeline)]
-        [IO.FileSystemInfo]
-        $InputObject
+        [PSModuleInfo]
+        $Module
     )
 
     begin
@@ -15,7 +15,7 @@ function Assert-DscModuleResourceIsValid
 
     process
     {
-        $FailedDscResources += Get-FailedDscResource -AllModuleResources (Get-DscResourceForModule -InputObject $InputObject)
+        $FailedDscResources += Get-FailedDscResource -AllModuleResources (Get-DscResourceForModule -Module $Module)
     }
 
     end

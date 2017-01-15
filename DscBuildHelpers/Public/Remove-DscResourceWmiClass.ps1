@@ -25,5 +25,3 @@ function Remove-DscResourceWmiClass {
         (Get-wmiobject -Namespace $DscNamespace -list -Class $ResourceType).psbase.delete()
     }
 }
-
-
