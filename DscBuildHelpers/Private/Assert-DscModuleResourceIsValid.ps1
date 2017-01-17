@@ -3,8 +3,8 @@ function Assert-DscModuleResourceIsValid
     [cmdletbinding()]
     param (
         [parameter(ValueFromPipeline)]
-        [PSModuleInfo]
-        $Module
+        [Microsoft.PowerShell.DesiredStateConfiguration.DscResourceInfo]
+        $DscResources
     )
 
     begin
@@ -15,7 +15,7 @@ function Assert-DscModuleResourceIsValid
 
     process
     {
-        $FailedDscResources += Get-FailedDscResource -AllModuleResources (Get-DscResourceForModule -Module $Module)
+        $FailedDscResources = Get-FailedDscResource -DscResource $DscResources
     }
 
     end
@@ -26,7 +26,7 @@ function Assert-DscModuleResourceIsValid
             foreach ($resource in $FailedDscResources)
             {
 
-                Write-Warning "`t`tFailed Resource - $($resource.Name) ($($resource.ParentPath))"
+                Write-Warning "`t`tFailed Resource - $($resource.Name) ($($resource.Version))"
             }
 
             throw "One or more resources is invalid."

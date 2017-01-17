@@ -5,22 +5,19 @@ function Publish-DscResourceModule {
             Mandatory
         )]
         [string]
-        $DscBuildOutputResources,
+        $DscBuildOutputModules,
 
         [io.FileInfo]
-        $PullServerWebConfig = "$env:SystemDrive\inetpub\wwwroot\PSDSCPullServer\web.config",
-        
-        [Switch]
-        $BuildResources
+        $PullServerWebConfig = "$env:SystemDrive\inetpub\wwwroot\PSDSCPullServer\web.config"
     )
     Begin
     {
-        if ($BuildResources -and ! (Test-Path $PullServerWebConfig) ) {
-            if ($PSBoundParameters.ContainsKey('ErrorAction') -and $PSBoundParameters['ErrorAction'] -ne 'SilentlyContinue') {
-                Throw "Could not find the Web.config of the pull Server at $PullServerWebConfig"
+        if ( !(Test-Path $PullServerWebConfig) ) {
+            if ($PSBoundParameters['ErrorAction'] -eq 'SilentlyContinue') {
+                Write-Verbose -Message "Could not find the Web.config of the pull Server at $PullServerWebConfig"
             }
             else {
-                Write-Verbose -Message "Could not find the Web.config of the pull Server at $PullServerWebConfig"
+                Throw "Could not find the Web.config of the pull Server at $PullServerWebConfig"
             }
             return
         }
@@ -31,13 +28,13 @@ function Publish-DscResourceModule {
     }
 
     Process {
-        if ( $BuildResources ) {
+        if ($OutputFolderPath) {
             Write-Verbose 'Moving Processed Resource Modules from '
-            Write-Verbose "`t$DscBuildOutputResources to"
+            Write-Verbose "`t$DscBuildOutputModules to"
             Write-Verbose "`t$OutputFolderPath"
 
-            if ($pscmdlet.shouldprocess("copy $DscBuildOutputResources to $OutputFolderPath")) {
-                Get-ChildItem -Path $DscBuildOutputResources -Include @('*.zip','*.checksum') |
+            if ($pscmdlet.shouldprocess("copy $DscBuildOutputModules to $OutputFolderPath")) {
+                Get-ChildItem -Path $DscBuildOutputModules -Include @('*.zip','*.checksum') |
                     Copy-Item -Destination $OutputFolderPath -Force
             }
         }

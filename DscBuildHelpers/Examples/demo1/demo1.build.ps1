@@ -12,6 +12,7 @@ C:\BuildSource\DSC_Script
 C:\BuildSource\DSC_Resources
 C:\BuildSource\DSC_ConfigurationData
 #>
+#$PSScriptRoot = 'C:\src\DscBuildHelpers\DscBuildHelpers\Examples\demo1'
 $InvokeBuildParams = @{
     DscWorkingDirectory = $PSScriptRoot
 
@@ -31,9 +32,9 @@ $InvokeBuildParams = @{
     ExcludedModules = @() #Module to not test or deploy
     ExcludedFolder  = @('.g*','.hg') #Module to exclude during publishing/discovery
 
-    ConfigurationData           = $null #Get-DscConfigurationData
-    ConfigurationDataModuleName = 'DSCPULLSRV'
-    ConfigurationName           = 'DSCPULLSRV'
+    ConfigurationData       = @{} #Get-DscConfigurationData
+    ConfigurationModuleName = 'DSCPULLSRV'
+    ConfigurationName       = 'DSCPULLSRV'
 
     BuildConfigurations = $true #Generate MOFs
     BuildResources      = $true #Test 'em and deploy
@@ -45,26 +46,29 @@ $InvokeBuildParams = @{
 #Invoke-Build @InvokeBuildParams
 #Add Build parameters
 
-Import-Module -Name "$PSScriptRoot/../../../DscBuildHelpers"
+Import-Module "$PSScriptRoot/../../../DscBuildHelpers" -Force
 #Provide Default for DscBuildSourceResources, SourceToolDirectory, DscBuildSourceTools
 # change PSModulePath to DscBuildSourceResources + PSHome\Modules + ModulePath
 $Env:PSModulePath = $InvokeBuildParams.DscBuildSourceResources + "; $PSHOME\Modules" + $Env:PSModulePath
 # Find-ModuleToPublish (Dir in SourceDirectory | ? ! -in $ExcludedModules)
-$modulesToPublish = Find-ModuleToPublish -DscBuildSourceResources $InvokeBuildParams.DscBuildSourceResources -DscBuildOutputModules $InvokeBuildParams.DscBuildOutputModules -ExcludedFolder 'ExcludeMe'
-# Clear-CachedDscResource
+$modulesToPublish = Find-ModuleToPublish -DscBuildSourceResources $InvokeBuildParams.DscBuildSourceResources `
+                                         -DscBuildOutputModules $InvokeBuildParams.DscBuildOutputModules `
+                                         -ExcludedModules @{ModuleName='xStorage';ModuleVersion='2.8.0.0'}
+
 Clear-CachedDscResource -Verbose
 
 #Invoke-DscResourceUnitTest
 # This is left out for now, Need to differentiate Unit Test from Integration test
 # Unit test aren't pretty for many resources... (Pollute session, need git clone...)
 
-#Copy-CurrentDscTools
-Copy-CurrentDscTools -SourceToolDirectory $InvokeBuildParams.DscBuildSourceResources `
-                     -DscBuildSourceTools $InvokeBuildParams.DscBuildOutputTools
 
-Test-DscResourceIsValid -DscBuildSourceResources $DscBuildSourceResources -ModulesToPublish $ModulesToPublish
+Copy-CurrentDscTools -DscBuildSourceTools $InvokeBuildParams.DscBuildSourceResources `
+                     -DscBuildOutputTools $InvokeBuildParams.DscBuildOutputTools
 
-#Assert-DestinationDirectory @ParametersToPass
+Test-DscResourceFromModuleInFolderIsValid -ModuleFolder $InvokeBuildParams.DscBuildSourceResources `
+                                          -Modules $ModulesToPublish
+
+
 Assert-DestinationDirectory -DscBuildOutputRoot $InvokeBuildParams.DscBuildOutputRoot `
                             -DscBuildOutputModules $InvokeBuildParams.DscBuildOutputModules `
                             -DscBuildOutputTools $InvokeBuildParams.DscBuildOutputTools `
@@ -72,7 +76,7 @@ Assert-DestinationDirectory -DscBuildOutputRoot $InvokeBuildParams.DscBuildOutpu
                             -DscBuildOutputTestResults $InvokeBuildParams.DscBuildOutputTestResults `
                             -BuildConfigurations:$InvokeBuildParams.BuildConfigurations `
                             -BuildResources:$InvokeBuildParams.BuildResources `
-                            -BuildTools:$InvokeBuildParams.BuildTools `
+                            -BuildTools:$InvokeBuildParams.BuildTools
 
 Invoke-DscConfiguration -ConfigurationModuleName $InvokeBuildParams.ConfigurationModuleName `
                         -ConfigurationName $InvokeBuildParams.ConfigurationName `
@@ -82,18 +86,16 @@ Invoke-DscConfiguration -ConfigurationModuleName $InvokeBuildParams.Configuratio
 
 Compress-DscResourceModule -DscBuildSourceResources $InvokeBuildParams.DscBuildSourceResources `
                            -DscBuildOutputModules $InvokeBuildParams.DscBuildOutputModules `
-                           -TestedModules $modulesToPublish
+                           -Modules $modulesToPublish
 
 
-#Publish-DscToolModule @ParametersToPass
-Publish-DscConfiguration -DscBuildOutputConfiguration $InvokeBuildParams.DscBuildOutputConfiguration `
+
+Publish-DscConfiguration -DscBuildOutputConfigurations $InvokeBuildParams.DscBuildOutputConfigurations `
                          -PullServerWebConfig "$env:SystemDrive\inetpub\wwwroot\PSDSCPullServer\web.config" `
-                         -BuildConfigurations $InvokeBuildParams.BuildConfigurations
+                         -BuildConfigurations:$InvokeBuildParams.BuildConfigurations
 
-Publish-DscResourceModule -DscBuildOutputResources $InvokeBuildParams.DscBuildOutputResources `
-                          -PullServerWebConfig "$env:SystemDrive\inetpub\wwwroot\PSDSCPullServer\web.config" `
-                          -BuildResources:$InvokeBuildParams.BuildResources `
-                          -ErrorAction SilentlyContinue
+Publish-DscResourceModule -DscBuildOutputModules $InvokeBuildParams.DscBuildOutputModules `
+                          -PullServerWebConfig "$env:SystemDrive\inetpub\wwwroot\PSDSCPullServer\web.config"
 
 Publish-DscToolModule -DscBuildOutputTools $InvokeBuildParams.DscBuildOutputTools `
                       -DscBuildPublishToolsLocation $InvokeBuildParams.DscBuildPublishToolsLocation

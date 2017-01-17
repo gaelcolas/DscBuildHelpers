@@ -26,32 +26,27 @@ function Assert-DestinationDirectory {
         $BuildTools
     )
 
-    foreach ($keyToDelete in @('WhatIf','ConfirmImpact') ) {
-        if ( $PSBoundParameters.containskey($keyToDelete) ) {
-           $null = $PSBoundParameters.remove($keyToDelete)
-        }
-    }
-
+    
     if ($pscmdlet.shouldprocess("Build Output Root: $DscBuildOutputRoot")) {
         Assert-Directory -Path $DscBuildOutputRoot
     }
 
     if ( $BuildResources ) {
         if ($pscmdlet.shouldprocess('module folders')) {
-            Assert-Directory -path $DscBuildOutputTools @psboundparameters
-            Assert-Directory -path $DscBuildOutputModules @psboundparameters
+            Assert-Directory -path $DscBuildOutputTools
+            Assert-Directory -path $DscBuildOutputModules
         }
     }
 
     if ( $BuildConfigurations ) {
         if ($pscmdlet.shouldprocess('configuration folders')) {
-            Assert-Directory -path $DscBuildOutputConfigurations @PSBoundParameters
+            Assert-Directory -path $DscBuildOutputConfigurations
         }
     }
 
     if ( $BuildTools ) {
         if ($pscmdlet.shouldprocess('tools folders')) {
-            Assert-Directory -path $DscBuildOutputTools @PSBoundParameters
+            Assert-Directory -path $DscBuildOutputTools
         }
     }
 }

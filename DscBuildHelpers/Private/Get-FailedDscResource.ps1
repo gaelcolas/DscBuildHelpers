@@ -2,10 +2,15 @@ function Get-FailedDscResource
 {
     [cmdletbinding()]
     param (
-        $AllModuleResources
+        [Parameter(
+            Mandatory,
+            ValueFromPipeline
+        )]
+        [Microsoft.PowerShell.DesiredStateConfiguration.DscResourceInfo[]]
+        $DscResource
     )
 
-    foreach ($resource in $AllModuleResources)
+    foreach ($resource in $DscResource)
     {
         if ($resource.Path)
         {
@@ -15,11 +20,14 @@ function Get-FailedDscResource
         {
             $resourceNameOrPath = $resource.Name
         }
-
+        
         if (-not (Test-xDscResource -Name $resourceNameOrPath))
         {
             Write-Warning "`tResources $($_.name) is invalid."
             $resource
+        }
+        else {
+            Write-Verbose ('DSC Resource Name {0} {1} is Valid' -f $resource.Name,$resource.Version)
         }
     }
 }

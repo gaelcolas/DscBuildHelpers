@@ -5,7 +5,7 @@ function Publish-DscConfiguration {
             Mandatory
         )]
         [string]
-        $DscBuildOutputConfiguration,
+        $DscBuildOutputConfigurations,
 
         [string]
         $PullServerWebConfig = "$env:SystemDrive\inetpub\wwwroot\PSDSCPullServer\web.config",
@@ -16,20 +16,16 @@ function Publish-DscConfiguration {
         [Switch]
         $BuildConfigurations
     )
+    Process {
+        Write-Verbose "Publishing Configuration MOFs from $DscBuildOutputConfigurations"
 
-    if ( $BuildConfigurations ) {
-
-        Write-Verbose 'Publishing Configuration MOFs from '
-        Write-Verbose "`t$DscBuildOutputConfiguration"
-        if ($pscmdlet.shouldprocess("$DscBuildOutputConfiguration")) {
-            Get-ChildItem -Path (join-path $DscBuildOutputConfiguration '*.mof') |
-                foreach-object {
-                    Write-Verbose "Publishing $($_.name)";
+        
+        Get-ChildItem -Path (join-path -Path $DscBuildOutputConfigurations -ChildPath '*.mof') |
+            foreach-object {
+                if ($pscmdlet.shouldprocess($_.BaseName)) {
+                    Write-Verbose -Message "Publishing $($_.name)"
                     Publish-MOFToPullServer -FullName $_.FullName -PullServerWebConfig $PullServerWebConfig
                 }
-        }
-    }
-    else {
-        Write-Warning "Skipping publishing configurations."
+            }
     }
 }
