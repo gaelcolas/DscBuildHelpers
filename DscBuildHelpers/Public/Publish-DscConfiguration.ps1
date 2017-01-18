@@ -8,13 +8,7 @@ function Publish-DscConfiguration {
         $DscBuildOutputConfigurations,
 
         [string]
-        $PullServerWebConfig = "$env:SystemDrive\inetpub\wwwroot\PSDSCPullServer\web.config",
-
-        [Parameter(
-            Mandatory
-        )]
-        [Switch]
-        $BuildConfigurations
+        $PullServerWebConfig = "$env:SystemDrive\inetpub\wwwroot\PSDSCPullServer\web.config"
     )
     Process {
         Write-Verbose "Publishing Configuration MOFs from $DscBuildOutputConfigurations"

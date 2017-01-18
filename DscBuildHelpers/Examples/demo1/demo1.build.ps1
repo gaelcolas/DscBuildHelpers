@@ -73,16 +73,13 @@ Assert-DestinationDirectory -DscBuildOutputRoot $InvokeBuildParams.DscBuildOutpu
                             -DscBuildOutputModules $InvokeBuildParams.DscBuildOutputModules `
                             -DscBuildOutputTools $InvokeBuildParams.DscBuildOutputTools `
                             -DscBuildOutputConfigurations $InvokeBuildParams.DscBuildOutputConfigurations `
-                            -DscBuildOutputTestResults $InvokeBuildParams.DscBuildOutputTestResults `
-                            -BuildConfigurations:$InvokeBuildParams.BuildConfigurations `
-                            -BuildResources:$InvokeBuildParams.BuildResources `
-                            -BuildTools:$InvokeBuildParams.BuildTools
+                            -DscBuildOutputTestResults $InvokeBuildParams.DscBuildOutputTestResults
+
 
 Invoke-DscConfiguration -ConfigurationModuleName $InvokeBuildParams.ConfigurationModuleName `
                         -ConfigurationName $InvokeBuildParams.ConfigurationName `
                         -DscBuildOutputConfigurations $InvokeBuildParams.DscBuildOutputConfigurations `
-                        -ConfigurationData $InvokeBuildParams.ConfigurationData `
-                        -BuildConfigurations:$InvokeBuildParams.BuildConfigurations
+                        -ConfigurationData $InvokeBuildParams.ConfigurationData
 
 Compress-DscResourceModule -DscBuildSourceResources $InvokeBuildParams.DscBuildSourceResources `
                            -DscBuildOutputModules $InvokeBuildParams.DscBuildOutputModules `
@@ -92,7 +89,7 @@ Compress-DscResourceModule -DscBuildSourceResources $InvokeBuildParams.DscBuildS
 
 Publish-DscConfiguration -DscBuildOutputConfigurations $InvokeBuildParams.DscBuildOutputConfigurations `
                          -PullServerWebConfig "$env:SystemDrive\inetpub\wwwroot\PSDSCPullServer\web.config" `
-                         -BuildConfigurations:$InvokeBuildParams.BuildConfigurations
+
 
 Publish-DscResourceModule -DscBuildOutputModules $InvokeBuildParams.DscBuildOutputModules `
                           -PullServerWebConfig "$env:SystemDrive\inetpub\wwwroot\PSDSCPullServer\web.config"
