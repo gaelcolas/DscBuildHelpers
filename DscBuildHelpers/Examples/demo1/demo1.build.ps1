@@ -1,4 +1,3 @@
-rm -Force -Recurse C:\BuildOutput
 <#
 C:\BuildOutput
 C:\BuildOutput\Modules
@@ -7,13 +6,13 @@ C:\BuildOutput\Configuration
 C:\BuildOutput\Tests
 
 
-C:\BuildSource
-C:\BuildSource\DSC_Tooling
-C:\BuildSource\DSC_Script
-C:\BuildSource\DSC_Resources
-C:\BuildSource\DSC_ConfigurationData
+.\
+.\DSC_Tooling
+.\DSC_Script
+.\DSC_Resources
+.\DSC_ConfigurationData
 #>
-#$PSScriptRoot = 'C:\src\DscBuildHelpers\DscBuildHelpers\Examples\demo1'
+
 $InvokeBuildParams = @{
     DscWorkingDirectory = $PSScriptRoot
 
