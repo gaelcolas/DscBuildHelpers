@@ -36,15 +36,10 @@ $InvokeBuildParams = @{
     ConfigurationModuleName = 'DSCPULLSRV'
     ConfigurationName       = 'DSCPULLSRV'
 
-    BuildConfigurations = $true #Generate MOFs
-    BuildResources      = $true #Test 'em and deploy
-    BuildTools          = $true #test 'em and deploy
-
     #$ModulePath = $null
 }
 
 #Invoke-Build @InvokeBuildParams
-#Add Build parameters
 
 Import-Module "$PSScriptRoot/../../../DscBuildHelpers" -Force
 #Provide Default for DscBuildSourceResources, SourceToolDirectory, DscBuildSourceTools
@@ -54,28 +49,29 @@ $Env:PSModulePath = $InvokeBuildParams.DscBuildSourceResources + "; $PSHOME\Modu
 $modulesToPublish = Find-ModuleToPublish -DscBuildSourceResources $InvokeBuildParams.DscBuildSourceResources `
                                          -DscBuildOutputModules $InvokeBuildParams.DscBuildOutputModules `
                                          -ExcludedModules @{ModuleName='xStorage';ModuleVersion='2.8.0.0'}
+rm -Force -Recurse C:\BuildOutput
 
-Clear-CachedDscResource -Verbose
-
-#Invoke-DscResourceUnitTest
-# This is left out for now, Need to differentiate Unit Test from Integration test
-# Unit test aren't pretty for many resources... (Pollute session, need git clone...)
-
-
-Copy-CurrentDscTools -DscBuildSourceTools $InvokeBuildParams.DscBuildSourceResources `
-                     -DscBuildOutputTools $InvokeBuildParams.DscBuildOutputTools
-
-Test-DscResourceFromModuleInFolderIsValid -ModuleFolder $InvokeBuildParams.DscBuildSourceResources `
-                                          -Modules $ModulesToPublish
-
-
-Assert-DestinationDirectory -DscBuildOutputRoot $InvokeBuildParams.DscBuildOutputRoot `
+Assert-BuildDirectory -DscBuildOutputRoot $InvokeBuildParams.DscBuildOutputRoot `
                             -DscBuildOutputModules $InvokeBuildParams.DscBuildOutputModules `
                             -DscBuildOutputTools $InvokeBuildParams.DscBuildOutputTools `
                             -DscBuildOutputConfigurations $InvokeBuildParams.DscBuildOutputConfigurations `
                             -DscBuildOutputTestResults $InvokeBuildParams.DscBuildOutputTestResults
 
 
+Clear-CachedDscResource
+
+#Invoke-DscResourceUnitTest
+# This is left out for now, Need to differentiate Unit Test from Integration test
+# Unit test aren't pretty for many resources... (Pollute session, need git clone...)
+
+Copy-CurrentDscTools -DscBuildSourceTools $InvokeBuildParams.DscBuildSourceTools `
+                     -DscBuildOutputTools $InvokeBuildParams.DscBuildOutputTools -Verbose
+
+Test-DscResourceFromModuleInFolderIsValid -ModuleFolder $InvokeBuildParams.DscBuildSourceResources `
+                                          -Modules $ModulesToPublish
+
+
+break
 Invoke-DscConfiguration -ConfigurationModuleName $InvokeBuildParams.ConfigurationModuleName `
                         -ConfigurationName $InvokeBuildParams.ConfigurationName `
                         -DscBuildOutputConfigurations $InvokeBuildParams.DscBuildOutputConfigurations `
