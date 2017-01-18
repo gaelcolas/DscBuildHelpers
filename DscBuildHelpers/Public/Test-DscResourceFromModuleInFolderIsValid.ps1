@@ -1,5 +1,5 @@
 function Test-DscResourceFromModuleInFolderIsValid {
-    [cmdletbinding(SupportsShouldProcess=$true)]
+    [cmdletbinding()]
     param (
         [Parameter(
             Mandatory

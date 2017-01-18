@@ -1,7 +1,6 @@
 === Changelog
 
 - Adding BuildHelpers as dependency
-- Deleted Get-ModuleAuthor, Get-DscResourceVersion ... Use BuildHelpers instead
 - Support for Multiple versions in Test-DscResourceIsValid
 - Added example resources xStorage with 2 versions
 - Making more functions public to use without Invoke-DscBuild

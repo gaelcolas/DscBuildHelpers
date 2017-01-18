@@ -14,8 +14,8 @@ function Publish-DscToolModule {
     )
 
     $ParametersToPass = $PSBoundParameters
-    $ParametersToPass.Remove('DscBuildOutputTools')
-    $ParametersToPass.Remove('DscBuildPublishToolsLocation')
+    $null = $ParametersToPass.Remove('DscBuildOutputTools')
+    $null = $ParametersToPass.Remove('DscBuildPublishToolsLocation')
 
     $ParametersToPass['DscBuildSourceTools'] = $DscBuildOutputTools
     $ParametersToPass['DscBuildOutputTools'] = $DscBuildPublishToolsLocation

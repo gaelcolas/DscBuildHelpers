@@ -14,17 +14,18 @@ function Publish-DscResourceModule {
     {
         if ( !(Test-Path $PullServerWebConfig) ) {
             if ($PSBoundParameters['ErrorAction'] -eq 'SilentlyContinue') {
-                Write-Verbose -Message "Could not find the Web.config of the pull Server at $PullServerWebConfig"
+                Write-Warning -Message "Could not find the Web.config of the pull Server at $PullServerWebConfig"
             }
             else {
                 Throw "Could not find the Web.config of the pull Server at $PullServerWebConfig"
             }
             return
         }
-
-        $webConfigXml = [xml](Get-Content -Raw -Path $PullServerWebConfig)
-        $configXElement = $webConfigXml.SelectNodes("//appSettings/add[@key = 'ConfigurationPath']")
-        $OutputFolderPath =  $configXElement.Value
+        else {
+            $webConfigXml = [xml](Get-Content -Raw -Path $PullServerWebConfig)
+            $configXElement = $webConfigXml.SelectNodes("//appSettings/add[@key = 'ConfigurationPath']")
+            $OutputFolderPath =  $configXElement.Value
+        }
     }
 
     Process {

@@ -4,7 +4,7 @@
 RootModule = 'DscBuildHelpers.psm1'
 
 # Version number of this module.
-ModuleVersion = '3.0.0.0'
+ModuleVersion = '0.0.1'
 
 # ID used to uniquely identify this module
 GUID = '23ccd4bf-0a52-4077-986f-c153893e5a6a'
@@ -41,11 +41,9 @@ PowerShellVersion = '5.0'
 
 # Modules that must be imported into the global environment prior to importing this module
 RequiredModules = @(
-    'Pester',
     'xDscResourceDesigner',
     'PSDesiredStateConfiguration',
-    'xPSDesiredStateConfiguration',
-    'BuildHelpers'
+    'xPSDesiredStateConfiguration'
 )
 
 # Assemblies that must be loaded prior to importing this module

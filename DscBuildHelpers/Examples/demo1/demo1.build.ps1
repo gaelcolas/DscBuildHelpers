@@ -1,3 +1,4 @@
+rm -Force -Recurse C:\BuildOutput
 <#
 C:\BuildOutput
 C:\BuildOutput\Modules
@@ -29,27 +30,20 @@ $InvokeBuildParams = @{
 
     DscBuildPublishToolsLocation = Join-Path -Path $PSHome -ChildPath Modules
 
-    ExcludedModules = @() #Module to not test or deploy
-    ExcludedFolder  = @('.g*','.hg') #Module to exclude during publishing/discovery
+    ExcludedModules = @(@{ModuleName='xStorage';ModuleVersion='2.8.0.0'},'ExcludeMe') #Module to not test or deploy
 
-    ConfigurationData       = @{} #Get-DscConfigurationData
-    ConfigurationModuleName = 'DSCPULLSRV'
-    ConfigurationName       = 'DSCPULLSRV'
-
-    #$ModulePath = $null
+    ConfigurationData       = Import-PowerShellDataFile -Path (Join-Path -Path $PSScriptRoot -ChildPath '.\DSC_ConfigurationData\ConfigurationData.psd1')
+    ConfigurationModuleName = 'SimpleConfig'
+    ConfigurationName       = 'SimpleConfig'
 }
 
 #Invoke-Build @InvokeBuildParams
 
 Import-Module "$PSScriptRoot/../../../DscBuildHelpers" -Force
-#Provide Default for DscBuildSourceResources, SourceToolDirectory, DscBuildSourceTools
-# change PSModulePath to DscBuildSourceResources + PSHome\Modules + ModulePath
-$Env:PSModulePath = $InvokeBuildParams.DscBuildSourceResources + "; $PSHOME\Modules" + $Env:PSModulePath
-# Find-ModuleToPublish (Dir in SourceDirectory | ? ! -in $ExcludedModules)
+
 $modulesToPublish = Find-ModuleToPublish -DscBuildSourceResources $InvokeBuildParams.DscBuildSourceResources `
                                          -DscBuildOutputModules $InvokeBuildParams.DscBuildOutputModules `
-                                         -ExcludedModules @{ModuleName='xStorage';ModuleVersion='2.8.0.0'}
-rm -Force -Recurse C:\BuildOutput
+                                         -ExcludedModules $InvokeBuildParams.ExcludedModules
 
 Assert-BuildDirectory -DscBuildOutputRoot $InvokeBuildParams.DscBuildOutputRoot `
                             -DscBuildOutputModules $InvokeBuildParams.DscBuildOutputModules `
@@ -68,14 +62,17 @@ Copy-CurrentDscTools -DscBuildSourceTools $InvokeBuildParams.DscBuildSourceTools
                      -DscBuildOutputTools $InvokeBuildParams.DscBuildOutputTools -Verbose
 
 Test-DscResourceFromModuleInFolderIsValid -ModuleFolder $InvokeBuildParams.DscBuildSourceResources `
-                                          -Modules $ModulesToPublish
+                                          -Modules $ModulesToPublish 
 
 
-break
+$Env:PSModulePath = $InvokeBuildParams.DscBuildSourceResources + ";$PSHOME\Modules;" + $Env:PSModulePath
 Invoke-DscConfiguration -ConfigurationModuleName $InvokeBuildParams.ConfigurationModuleName `
                         -ConfigurationName $InvokeBuildParams.ConfigurationName `
                         -DscBuildOutputConfigurations $InvokeBuildParams.DscBuildOutputConfigurations `
-                        -ConfigurationData $InvokeBuildParams.ConfigurationData
+                        -ConfigurationData $InvokeBuildParams.ConfigurationData `
+                        -DscBuildSourceResources $InvokeBuildParams.DscBuildSourceResources `
+                        -DscBuildSourceTools $InvokeBuildParams.DscBuildOutputTools `
+                        -DscBuildSourceScript $InvokeBuildParams.DscBuildSourceScript
 
 Compress-DscResourceModule -DscBuildSourceResources $InvokeBuildParams.DscBuildSourceResources `
                            -DscBuildOutputModules $InvokeBuildParams.DscBuildOutputModules `
@@ -84,11 +81,12 @@ Compress-DscResourceModule -DscBuildSourceResources $InvokeBuildParams.DscBuildS
 
 
 Publish-DscConfiguration -DscBuildOutputConfigurations $InvokeBuildParams.DscBuildOutputConfigurations `
-                         -PullServerWebConfig "$env:SystemDrive\inetpub\wwwroot\PSDSCPullServer\web.config" `
+                         -PullServerWebConfig "$env:SystemDrive\inetpub\wwwroot\PSDSCPullServer\web.config" 
 
 
 Publish-DscResourceModule -DscBuildOutputModules $InvokeBuildParams.DscBuildOutputModules `
-                          -PullServerWebConfig "$env:SystemDrive\inetpub\wwwroot\PSDSCPullServer\web.config"
+                          -PullServerWebConfig "$env:SystemDrive\inetpub\wwwroot\PSDSCPullServer\web.config"`
+                         -ErrorAction SilentlyContinue
 
 Publish-DscToolModule -DscBuildOutputTools $InvokeBuildParams.DscBuildOutputTools `
                       -DscBuildPublishToolsLocation $InvokeBuildParams.DscBuildPublishToolsLocation
