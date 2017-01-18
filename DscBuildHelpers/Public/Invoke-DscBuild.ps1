@@ -13,149 +13,127 @@ function Invoke-DscBuild
             }
             Invoke-DscBuild @BuildParameters
     #>
-    [Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSShouldProcess")]
-    [cmdletbinding(SupportsShouldProcess=$true)]
-    param (
-        #Root of your source control check outs or the folder above your Dsc_Configuration, Dsc_Resources, and Dsc_Tools directory.
-        [parameter(mandatory)]
-        [string]
-        $DscWorkingDirectory,
+    [cmdletBinding()]
+    [OutputType([void])]
+    Param (
+        $DscBuildSourceRoot = $(
+                if ( $Caller = (Get-PSCallStack)[0].InvocationInfo.MyCommand.Path ) {
+                    Split-Path -ErrorAction SilentlyContinue -Parent $Caller
+                } 
+                else {
+                    $PWD.Path
+                }
+        ),
 
-        #Directory containing all the resources to process.  Defaults to a Dsc_Resources directory under the working directory.
-        [parameter()]
-        [ValidateNotNullOrEmpty()]
-        [string]
-        $DscBuildSourceResources,
+        $DscBuildOutputRoot           = 'C:\BuildOutput',
+        $DscBuildOutputModules        = 'C:\BuildOutput\Modules',
+        $DscBuildOutputTools          = 'C:\BuildOutput\Tools',
+        $DscBuildOutputConfigurations = 'C:\BuildOutput\Configurations',
+        $DscBuildOutputTestResults    = 'C:\BuildOutput\TestResults',
 
-        #Directory containing all the tools to process.  Defaults to a Dsc_Tooling directory under the working directory.
-        [parameter()]
-        [ValidateNotNullOrEmpty()]
-        [string]
-        $SourceToolDirectory,
+        $DscBuildSourceTools             = (Join-Path -Path $DscBuildSourceRoot -ChildPath '.\DSC_Tooling'),
+        $DscBuildSourceScript            = (Join-Path -Path $DscBuildSourceRoot -ChildPath '.\DSC_Script'),
+        $DscBuildSourceResources         = (Join-Path -Path $DscBuildSourceRoot -ChildPath '.\DSC_Resources'),
+        $DscBuildSourceConfigurationData = (Join-Path -Path $DscBuildSourceRoot -ChildPath '.\DSC_ConfigurationData'),
 
-        #Root of the location where pull server artifacts (configurations and zipped resources) are published.
-        [parameter(mandatory)]
-        [string]
-        $DscBuildOutputRoot,
+        [AllowNull()]
+        $DscBuildPublishToolsLocation,
 
-        #Destination for any tools that are published.
-        [parameter(mandatory)]
-        [string]
-        $DscBuildOutputTools,
+        $ExcludedModules = @(@{ModuleName='xStorage';ModuleVersion='2.8.0.0'},'ExcludeMe'), #Module to not test or deploy
 
-        #Modules to exclude from the resource testing and deployment process.
-        [ValidateNotNullOrEmpty()]
-        [string[]]
-        $ExcludedModules = @(),
-
-        #The configuration data hashtable for the configuration to apply against.
-        [parameter(mandatory)]
-        [System.Collections.Hashtable]
-        $ConfigurationData,
-
-        #The name of the module to load that contains the configuration to run.
-        [parameter(mandatory)]
-        [string]
-        $ConfigurationModuleName,
-
-        #The name of the configuration to run.
-        [parameter(mandatory)]
-        [string]
-        $ConfigurationName,
-
-        #Custom location for the location of the DSC Build Tools modules.
-        [parameter()]
-        [ValidateNotNullOrEmpty()]
-        [string]
-        $DscBuildSourceTools,
-
-        #This switch is used to indicate that configuration documents should be generated and deployed.
-        [parameter()]
-        [switch]
-        $Configuration,
-
-        #This switch is used to indicate that custom resources should be tested and deployed.
-        [parameter()]
-        [switch]
-        $Resource,
-
-        #This switch is used to indicate that the custom tools should be tested and deployed.
-        [parameter()]
-        [switch]
-        $Tools,
-
-        # Paths that should be in the PSModulePath during test execution.  $DscBuildSourceResources and $pshome\Modules are automatically included in this list.
-        [ValidateNotNullOrEmpty()]
-        [string[]]
-        $ModulePath,
-
-        #Skip DSC resources Unit test (quicker but more fragile)
-        [switch]
-        $SkipDSCResourcesUnitTest
+        $ConfigurationData       = (Import-PowerShellDataFile `
+                                        -Path (Join-Path -Path $DscBuildSourceConfigurationData `
+                                                         -ChildPath 'ConfigurationData.psd1')
+                                    ),
+        $ConfigurationModuleName = 'SimpleConfig',
+        $ConfigurationName       = 'SimpleConfig'
     )
+    $separation = '#'*70
+    Write-Verbose $separation
+    Write-Verbose ""
+    Write-Verbose " STARTING DSC BUILD"
+    Write-Verbose ""
+    Write-Verbose $separation
+    Write-Verbose ""
+    Write-Verbose ("`tFinding Modules not yet published from $DscBuildSourceResources")
 
-    $script:DscBuildParameters = new-object PSObject -property $PSBoundParameters
-    if (-not $PSBoundParameters.ContainsKey('DscBuildSourceResources')) {
-        Add-DscBuildParameter -Name DscBuildSourceResources -value (Join-Path $DscWorkingDirectory 'Dsc_Resources')
+    $modulesToPublish = Find-ModuleToPublish -DscBuildSourceResources $DscBuildSourceResources `
+                                             -DscBuildOutputModules $DscBuildOutputModules `
+                                             -ExcludedModules $ExcludedModules
+    Write-Verbose $separation
+    Write-Verbose ""
+    Write-Verbose "`tTesting PowerShell DSC Resources to Publish"
+    Test-DscResourceFromModuleInFolderIsValid -ModuleFolder $DscBuildSourceResources `
+                                            -Modules $ModulesToPublish 
+
+    Write-Verbose $separation
+    Write-Verbose ""
+    Write-Verbose "`tEnsuring output Directory are created, or create them"
+    Assert-BuildDirectory -DscBuildOutputRoot $DscBuildOutputRoot `
+                                -DscBuildOutputModules $DscBuildOutputModules `
+                                -DscBuildOutputTools $DscBuildOutputTools `
+                                -DscBuildOutputConfigurations $DscBuildOutputConfigurations `
+                                -DscBuildOutputTestResults $DscBuildOutputTestResults
+
+    Write-Verbose $separation
+    Write-Verbose ""
+    Write-Verbose "`tClearing DSC Cache"
+    Clear-CachedDscResource
+
+    #Invoke-DscResourceUnitTest
+    # This is left out for now, Need to differentiate Unit Test from Integration test
+    # Unit test aren't pretty for many resources... (Pollute session, need git clone...)
+    
+    Write-Verbose $separation
+    Write-Verbose ""
+    Write-Verbose "`tCompiling the MOFs"
+    Invoke-DscConfiguration -ConfigurationModuleName $ConfigurationModuleName `
+                            -ConfigurationName $ConfigurationName `
+                            -DscBuildOutputConfigurations $DscBuildOutputConfigurations `
+                            -ConfigurationData $ConfigurationData `
+                            -DscBuildSourceResources $DscBuildSourceResources `
+                            -DscBuildSourceTools $DscBuildOutputTools `
+                            -DscBuildSourceScript $DscBuildSourceScript
+
+    Write-Verbose $separation
+    Write-Verbose ""
+    Write-Verbose "`tCopying missing DSC Tooling"
+    Copy-CurrentDscTools -DscBuildSourceTools $DscBuildSourceTools `
+                        -DscBuildOutputTools $DscBuildOutputTools
+
+    Write-Verbose $separation
+    Write-Verbose ""
+    Write-Verbose "`tCompressing Missing module for Pull Server"
+    Compress-DscResourceModule -DscBuildSourceResources $DscBuildSourceResources `
+                            -DscBuildOutputModules $DscBuildOutputModules `
+                            -Modules $modulesToPublish
+
+
+    Write-Verbose $separation
+    Write-Verbose ""
+    Write-Verbose "`tPublishing MOFs to Pull Server"
+    Publish-DscConfiguration -DscBuildOutputConfigurations $DscBuildOutputConfigurations `
+                            -PullServerWebConfig "$env:SystemDrive\inetpub\wwwroot\PSDSCPullServer\web.config" 
+
+    Write-Verbose $separation
+    Write-Verbose ""
+    Write-Verbose "`tPublishing Compressed Modules to Pull Server"
+    Publish-DscResourceModule -DscBuildOutputModules $DscBuildOutputModules `
+                            -PullServerWebConfig "$env:SystemDrive\inetpub\wwwroot\PSDSCPullServer\web.config"`
+                            -ErrorAction SilentlyContinue
+    
+    if ($DscBuildPublishToolsLocation) {
+        Write-Verbose $separation
+        Write-Verbose ""
+        Write-Verbose "`tPublishing DSCTools to Tools Publish Location: $DscBuildPublishToolsLocation"
+        Publish-DscToolModule -DscBuildOutputTools $DscBuildOutputTools `
+                            -DscBuildPublishToolsLocation $DscBuildPublishToolsLocation
     }
-    if (-not $PSBoundParameters.ContainsKey('SourceToolDirectory')) {
-        Add-DscBuildParameter -Name SourceToolDirectory -value (Join-Path $DscWorkingDirectory 'Dsc_Tooling')
-    }
-    if (-not $PSBoundParameters.ContainsKey('DscBuildSourceTools')) {
-        Add-DscBuildParameter -Name DscBuildSourceTools -value (join-path $env:ProgramFiles 'WindowsPowerShell\Modules')
-    }
 
-    $ParametersToPass = @{}
-    foreach ($key in ('Whatif', 'Verbose', 'Debug'))
-    {
-        if ($PSBoundParameters.ContainsKey($key)) {
-            $ParametersToPass[$key] = $PSBoundParameters[$key]
-        }
-    }
-
-    $originalPSModulePath = $env:PSModulePath
-
-    try
-    {
-        $dirPath = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($DscBuildSourceResources)
-
-        $modulePaths = @(
-            $dirPath
-            Join-Path $pshome Modules
-            $ModulePath
-        )
-
-        $env:PSModulePath = $modulePaths -join ';'
-        if ( $Resource -or -not ($Tools -or $Configuration)) {
-            $modulesToPublish = Find-ModuleToPublish @ParametersToPass
-        }
-
-        Add-DscBuildParameter -Name ModulesToPublish -Value $modulesToPublish
-        
-        Clear-CachedDscResource @ParametersToPass
-
-        if(!$SkipDSCResourcesUnitTest) {
-            #The Unit tests are not consitent, and some cannot be run twice (don't cleanup the session)
-            #Also, the current implementation Invoke-Pester on the whole resource, but Integration tests
-            #can't be run like so
-            Invoke-DscResourceUnitTest @ParametersToPass
-        }
-
-        Copy-CurrentDscTools @ParametersToPass
-
-        Test-DscResourceIsValid @ParametersToPass
-
-        Assert-DestinationDirectory @ParametersToPass
-
-        Invoke-DscConfiguration @ParametersToPass
-
-        Compress-DscResourceModule @ParametersToPass
-        Publish-DscToolModule @ParametersToPass
-        Publish-DscResourceModule @ParametersToPass
-        Publish-DscConfiguration @ParametersToPass
-    }
-    finally
-    {
-        $env:PSModulePath = $originalPSModulePath
-    }
+    Write-Verbose $separation
+    Write-Verbose ""
+    Write-Verbose " INVOKE DSC BUILD COMPLETE"
+    Write-Verbose ""
+    Write-Verbose $separation
+    Write-Verbose ""
 }
