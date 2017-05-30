@@ -59,21 +59,43 @@ When 'we transfer those modules to remote node' {
         }
     }
 
-    #For those modules, find those not yet uploaded to target
-    # by verifying the remote fileName.zip.checksum against local
-    #  then verifying the remote fileHash differs
-    $FileNameChecksumDict = @{}
-    foreach ($ModuleToInject in $ModulesToInject) {
-        $FileName = "$().zip.checksum"
-        Get-Content "$RelativePathToDemo/BuildOutput/$FileName.checksum"
+    #For those modules to inject, find the one that have a non-matching checksum
+    # against the local one by checking the remote checksum file, and remote zip file hash
+    $ZipFileSpecs = $ModulesToInject.foreach{
+        @{
+            FileName = "$($_.Name)_$($_.Version).zip"
+            Checksum = gc -Raw "$RelativePathToDemo\BuildOutput\$($_.Name)_$($_.Version).zip.checksum"
+        }
     }
 
-    #Then copy the the missing files to the target
-    
+    $RemotePathToZips = 'C:\TMP\DscPush\'
+    $ZipsToInject = Invoke-command -Session $RemoteNode -ScriptBlock {
+        Param($PathToZips = 'C:\TMP\DscPush\',$ZipFileSpecs)
+        if (!(Test-Path $PathToZips)) {
+            mkdir $PathToZips -Force
+            return $ZipFileSpecs
+        }
+        foreach ($ZipToTestChecksum in $ZipFileSpecs) {
+            $FilePath = "$PathToZips\$($ZipToTestChecksum.FileName)"
+            if (!(Test-Path $FilePath) -or 
+                $ZipToTestChecksum.checksum -ne  (Get-Content "$FilePath.checksum" -ErrorAction SilentlyContinue) -or
+                $ZipToTestChecksum.checksum -ne (Get-FileHash "$FilePath" -ErrorAction SilentlyContinue).hash
+            ) {
+                Write-Verbose "$FilePath Checksum ne $($ZipToTestChecksum.Checksum)"
+                Write-Output $ZipToTestChecksum
+            }
+        }
+    } -ArgumentList $RemotePathToZips,$ZipFileSpecs
 
     
+    #Then copy the the missing files to the target
+    foreach ($Zip in $ZipsToInject) {
+        Copy-Item -Path "$RelativePathToDemo\BuildOutput\$($Zip.FileName)*" -ToSession $RemoteNode -Destination $RemotePathToZips -Force
+    }
 
 }
+
+
 <#
 
 When 'we extract to destination module path' {
