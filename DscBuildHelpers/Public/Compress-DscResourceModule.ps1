@@ -1,8 +1,9 @@
+#Requires -Modules  xPSDesiredStateConfiguration
 function Compress-DscResourceModule {
     [cmdletbinding(SupportsShouldProcess=$true)]
     param (
         [Parameter(
-            Mandatory
+            #Mandatory
         )]
         [ValidateNotNullOrEmpty()]
         $DscBuildSourceResources,
@@ -27,11 +28,11 @@ function Compress-DscResourceModule {
         Foreach ($Module in $Modules) {
             if (
                  $pscmdlet.shouldprocess(
-                    "Compress $Module $($Module.Version) from $DscBuildSourceResources to $DscBuildOutputModules"
+                    "Compress $Module $($Module.Version) from $(Split-Path -parent $Module.Path) to $DscBuildOutputModules"
                  )
                 )
             {
-                $Module | Publish-ModuleToPullServer -ModuleBase (Split-Path -parent $Module.Path) `
+                $Module |  xPSDesiredStateConfiguration\Publish-ModuleToPullServer -ModuleBase (Split-Path -parent $Module.Path) `
                                                      -OutputFolderPath $DscBuildOutputModules
             }
         }

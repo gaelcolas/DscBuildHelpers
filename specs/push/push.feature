@@ -1,0 +1,8 @@
+@push
+Feature: Apply DSC Configuration on remote Node
+    While in Pull mode the MOF is generated before being made available on
+    the Pull Server, in Push Mode we should either be able to Push a pre-compiled
+    MOF document, or Push the Configuration script to the managed node to be compiled
+    and applied. This Push mode should inject missing dependencies to the remote node,
+    and allow to push those configuration to multiple nodes at once (in Parallel, 
+    while setting a variable cap on the concurrency)
