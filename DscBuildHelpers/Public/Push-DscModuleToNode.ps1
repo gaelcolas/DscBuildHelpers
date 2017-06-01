@@ -62,12 +62,17 @@ function Push-DscModuleToNode {
         $Session,
 
         [Parameter(
-            ,Position = 1
+            ,Position = 3
             ,ValueFromPipelineByPropertyName
             ,ValueFromRemainingArguments
         )]
         $RemoteStagingPath = 'C:\TMP\DSC\modules\',
 
+        [Parameter(
+            ,Position = 4
+            ,ValueFromPipelineByPropertyName
+            ,ValueFromRemainingArguments
+        )]
         [switch]
         $Force
     )
