@@ -6,3 +6,20 @@ Feature: Apply DSC Configuration on remote Node
     and applied. This Push mode should inject missing dependencies to the remote node,
     and allow to push those configuration to multiple nodes at once (in Parallel, 
     while setting a variable cap on the concurrency)
+    
+    @ManualSpec
+    Scenario: Compile a MOF locally, inject dependencies, Start-DscConfiguration
+        Given a loaded DSC Configuration script
+        And we have a destination node available
+        And the module is loaded
+        When we call Push-DscModuleToNode
+        And we copy
+        Then the DSC Configuration is applied successfully
+
+    @Function
+    Scenario: Compile a MOF locally and apply to remote node injecting dependencies
+        Given a loaded DSC Configuration script
+        And we have a destination node available
+        And the module is loaded
+        When we call Push-DscConfiguration -CompileMof Locally -Dependencies $Modules
+        Then the DSC Configuration is applied successfully
