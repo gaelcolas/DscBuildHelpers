@@ -9,11 +9,11 @@ Feature: Apply DSC Configuration on remote Node
     
     @ManualSpec
     Scenario: Compile a MOF locally, inject dependencies, Start-DscConfiguration
-        Given a loaded DSC Configuration script
+        Given a DSC Configuration script compiling a MOF locally
         And we have a destination node available
         And the module is loaded
         When we call Push-DscModuleToNode
-        And we copy
+        And we copy the configuration MOF
         Then the DSC Configuration is applied successfully
 
     @Function

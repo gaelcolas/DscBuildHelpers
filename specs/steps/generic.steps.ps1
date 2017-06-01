@@ -5,9 +5,12 @@ Given 'we have xCertificate module in the ./module/ folder' {
 }
 
 Given 'we have a destination node available' {
+    
     if ( -not ($computername = $Env:TargetNode )) { $computername = 'localhost' }
     if ( -not ($global:creds)) { $global:creds = Get-Credential }
-    { Invoke-command -computerName $computername -ScriptBlock { 'checked' } -Credential $global:creds -ErrorAction Stop } | Should not Throw
+    $RemoteNode = New-PSsession -computerName $computername -Credential $global:creds -ErrorAction Stop
+    $script:RemoteSession = $RemoteNode
+    { Invoke-command -Session $script:RemoteSession -ScriptBlock { 'checked' } -ErrorAction Stop } | Should not Throw
 }
 
 Given 'The module is loaded' {
