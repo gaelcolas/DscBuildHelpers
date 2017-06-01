@@ -36,6 +36,7 @@ When 'we transfer those modules to remote node' {
     if ( -not ($global:creds)) { $global:creds = Get-Credential }
     $RelativePathToDemo = "$PSScriptRoot/../../*/Examples/demo2/"
     $RemoteNode = New-PSsession -computerName $computername -Credential $global:creds -ErrorAction Stop
+    $script:RemoteSession = $RemoteNode
     $remoteModules = Invoke-command -Session $RemoteNode -ScriptBlock {Get-Module -ListAvailable}
     $RequiredModules = Get-ModuleFromFolder -ModuleFolder (get-item "$RelativePathToDemo/modules/")
     
@@ -92,21 +93,30 @@ When 'we transfer those modules to remote node' {
     foreach ($Zip in $ZipsToInject) {
         Copy-Item -Path "$RelativePathToDemo\BuildOutput\$($Zip.FileName)*" -ToSession $RemoteNode -Destination $RemotePathToZips -Force
     }
-
+    
+    $script:ModulesToInject = $ModulesToInject
 }
-
-
-<#
 
 When 'we extract to destination module path' {
-    throw 'Not Implemented yet'
+    $RemotePathToZips = 'C:\TMP\DscPush'
+    if($script:ModulesToInject) {
+        Invoke-Command -Session $script:RemoteSession -ScriptBlock {
+            Param($ModulesToInject,$PathToZips)
+            foreach ($module in $ModulesToInject) {
+                $fileName = "$($module.Name)_$($module.version).zip"
+                Write-Verbose "Expanding $PathToZips/$fileName to $Env:CommonProgramW6432\WindowsPowerShell\Modules\$($Module.Name)\$($module.version)" 
+                Expand-Archive -Path "$PathToZips/$fileName" -DestinationPath "$Env:ProgramW6432\WindowsPowerShell\Modules\$($Module.Name)\$($module.version)" -Force
+            }
+        } -ArgumentList $script:ModulesToInject,$RemotePathToZips
+    }
 }
 
+
 When 'we call get-module -Listavailable' {
-    throw 'Not Implemented yet'
+    $script:TestedModules = get-module -ListAvailable xCertificate | ? version -eq '0.0.0.1' 
 }
 
 Then 'the copied modules are present and available' {
-    throw 'Not Implemented yet'
+    $script:TestedModules | should not BeNullOrEmpty
+    rm -Force -Recurse -ErrorAction SilentlyContinue "$Env:ProgramW6432\WindowsPowerShell\Modules\xCertificate"
 }
-#>
