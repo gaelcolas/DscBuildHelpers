@@ -22,6 +22,6 @@ Feature: Allow injecting Modules and resources to remote host
         Given we have xCertificate module in the ./module/ folder
         And we have a destination node available
         And The module is loaded
-        When we call Push-DscDependenciesToNode
+        When we call Push-DscModuleToNode
         And we call get-module -Listavailable
         Then the copied modules are present and available

@@ -20,6 +20,7 @@ Given 'The module is loaded' {
 
 When 'we package-up each module' {
     $RelativePathToDemo = "$PSScriptRoot/../../*/Examples/demo2/"
+    #cleanup for test
     if(test-path "$RelativePathToDemo/BuildOutput/xCertificate_*.zip") {
         Remove-Item -force "$RelativePathToDemo/BuildOutput/xCertificate_*.zip*" | out-null
     }
@@ -111,8 +112,10 @@ When 'we extract to destination module path' {
     }
 }
 
-When 'we call Push-DscDependenciesToNode' {
-    { Push-DscDependenciesToNode -Session $script:RemoteSession -Dependencies (Find-ModuleToPublish -DscBuildSourceResources (get-item "$RelativePathToDemo/modules/") -DscBuildOutputModules "$RelativePathToDemo/BuildOutput")  } | Should not Throw
+When 'we call Push-DscModuleToNode' {
+    #rm C:\TMP\DSC\modules\xCertificate_0.0.0.1.zip* -Force
+    $RelativePathToDemo = "$PSScriptRoot/../../*/Examples/demo2/"
+    { Push-DscModuleToNode -Module (Get-ModuleFromFolder (gi "$RelativePathToDemo/modules/")) -Session $script:RemoteSession -StagingFolderPath "$RelativePathToDemo/BuildOutput" <# -force #>  } | Should not Throw
 }
 
 When 'we call get-module -Listavailable' {
