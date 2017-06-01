@@ -14,7 +14,7 @@ Given 'we have a destination node available' {
 Given 'The module is loaded' {
     $ModulePath = "$PSScriptRoot/../../*/DscBuildHelpers.psd1"
     Test-Path $ModulePath | Should Be $true
-    Import-module $ModulePath
+    Import-module $ModulePath -Force
     Get-Module DscBuildHelpers | should not BeNullOrEmpty
 }
 
@@ -111,6 +111,9 @@ When 'we extract to destination module path' {
     }
 }
 
+When 'we call Push-DscDependenciesToNode' {
+    { Push-DscDependenciesToNode -Session $script:RemoteSession -Dependencies (Find-ModuleToPublish -DscBuildSourceResources (get-item "$RelativePathToDemo/modules/") -DscBuildOutputModules "$RelativePathToDemo/BuildOutput")  } | Should not Throw
+}
 
 When 'we call get-module -Listavailable' {
     $script:TestedModules = get-module -ListAvailable xCertificate | ? version -eq '0.0.0.1' 
