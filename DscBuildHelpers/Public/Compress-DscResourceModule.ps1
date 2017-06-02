@@ -24,6 +24,11 @@ function Compress-DscResourceModule {
         $Modules
     )
 
+    begin {
+        if (!(Test-Path $DscBuildOutputModules)) {
+            mkdir $DscBuildOutputModules -Force
+        }
+    }
     Process {
         Foreach ($Module in $Modules) {
             if (
@@ -32,6 +37,7 @@ function Compress-DscResourceModule {
                  )
                 )
             {
+                Write-Verbose "Publishing Module $(Split-Path -parent $Module.Path) to $DscBuildOutputModules"
                 $Module |  xPSDesiredStateConfiguration\Publish-ModuleToPullServer -ModuleBase (Split-Path -parent $Module.Path) `
                                                      -OutputFolderPath $DscBuildOutputModules
             }

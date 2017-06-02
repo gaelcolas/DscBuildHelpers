@@ -2,13 +2,16 @@ $PSModuleAutoLoadingPreference = "None"
 
 
 When 'we package-up each module' {
-    $RelativePathToDemo = "$PSScriptRoot/../../*/Examples/demo2/"
+    $RelativePathToDemo = "$PSScriptRoot/../../DscBuildHelpers/Examples/demo2/"
     #cleanup for test
     if(test-path "$RelativePathToDemo/BuildOutput/xCertificate_*.zip") {
         Remove-Item -force "$RelativePathToDemo/BuildOutput/xCertificate_*.zip*" | out-null
     }
-    Find-ModuleToPublish -DscBuildSourceResources (get-item "$RelativePathToDemo/modules/") -DscBuildOutputModules "$RelativePathToDemo/BuildOutput" |
-        Compress-DscResourceModule -DscBuildSourceResources (Get-Item "$RelativePathToDemo/modules/") -DscBuildOutputModules "$RelativePathToDemo/BuildOutput"
+    Write-Verbose "Searching for modules in $(Get-Item "$RelativePathToDemo/modules/")"
+    $modulesToZipUp = Find-ModuleToPublish -DscBuildSourceResources (get-item "$RelativePathToDemo/modules/") -DscBuildOutputModules "$RelativePathToDemo/BuildOutput"
+    Write-verbose "Modules to Zip: $($modulesToZipUp.Name -join ', ')"
+
+    $modulesToZipUp | Compress-DscResourceModule -DscBuildSourceResources (Get-Item "$RelativePathToDemo/modules/") -DscBuildOutputModules "$RelativePathToDemo/BuildOutput"
 
     if(!(test-path "$RelativePathToDemo/BuildOutput/xCertificate_*.zip")) {
         Throw 'xCertificate Module not packaged up'
@@ -98,7 +101,7 @@ When 'we extract to destination module path' {
 When 'we call Push-DscModuleToNode' {
     #rm C:\TMP\DSC\modules\xCertificate_0.0.0.1.zip* -Force
     $RelativePathToDemo = "$PSScriptRoot/../../*/Examples/demo2/"
-    { Push-DscModuleToNode -Module (Get-ModuleFromFolder (gi "$RelativePathToDemo/modules/")) -Session $script:RemoteSession -StagingFolderPath "$RelativePathToDemo/BuildOutput" <# -force #>  } | Should not Throw
+    { Push-DscModuleToNode -verbose -Module (Get-ModuleFromFolder (gi "$RelativePathToDemo/modules/")) -Session $script:RemoteSession -StagingFolderPath "$RelativePathToDemo/BuildOutput" <# -force #>  } | Should not Throw
 }
 
 When 'we call get-module -Listavailable' {
