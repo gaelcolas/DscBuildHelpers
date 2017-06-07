@@ -18,8 +18,7 @@ Feature: Apply DSC Configuration on remote Node
 
     @Function
     Scenario: Compile a MOF locally and apply to remote node injecting dependencies
-        Given a loaded DSC Configuration script
+        Given a DSC Configuration script compiling a MOF locally
         And we have a destination node available
         And the module is loaded
-        When we call Push-DscConfiguration -CompileMof Locally -Dependencies $Modules
-        Then the DSC Configuration is applied successfully
+        Then we call Push-DscConfiguration to apply mof with dependencies
