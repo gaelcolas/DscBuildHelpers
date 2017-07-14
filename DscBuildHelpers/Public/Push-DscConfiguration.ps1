@@ -45,7 +45,7 @@ function Push-DscConfiguration {
         
         # Param3 help description
         [Parameter()]
-        [psmoduleinfo]
+        [psmoduleinfo[]]
         $WithModule,
 
         [Parameter(
@@ -61,7 +61,7 @@ function Push-DscConfiguration {
             ,ValueFromPipelineByPropertyName
             ,ValueFromRemainingArguments
         )]
-        $RemoteStagingPath = 'C:\TMP\DSC\modules\',
+        $RemoteStagingPath = '$Env:TMP\DSC\modules\',
 
         [Parameter(
             ,Position = 4
@@ -75,15 +75,22 @@ function Push-DscConfiguration {
    
     process {
         if ($pscmdlet.ShouldProcess($Session.ComputerName, "Applying MOF $ConfigurationDocument")) {
-            Push-DscModuleToNode -Module $WithModule -StagingFolderPath $StagingFolderPath -RemoteStagingPath $RemoteStagingPath -Session $Session
-
-            Write-Verbose "Removing previously pushed configuration documents"
-            Invoke-Command -Session $Session -ScriptBlock {
-                Get-item "$Using:RemoteStagingPath\*.mof" | Remove-Item -force
+            if ($WithModule) {
+                Push-DscModuleToNode -Module $WithModule -StagingFolderPath $StagingFolderPath -RemoteStagingPath $RemoteStagingPath -Session $Session
             }
 
+            Write-Verbose "Removing previously pushed configuration documents"
+            $ResolvedRemoteStagingPath = Invoke-Command -Session $Session -ScriptBlock {
+                $ResolvedStagingPath = $ExecutionContext.InvokeCommand.ExpandString($Using:RemoteStagingPath)
+                $null = Get-item "$ResolvedStagingPath\*.mof" | Remove-Item -force -ErrorAction SilentlyContinue
+                if (!(Test-Path $ResolvedStagingPath)) {
+                    mkdir -Force $ResolvedStagingPath -ErrorAction Stop
+                }
+                Write-Output $ResolvedStagingPath
+            } -ErrorAction Stop
+
             $RemoteConfigDocumentPath = [io.path]::Combine(
-                $RemoteStagingPath,
+                $ResolvedRemoteStagingPath,
                 'localhost.mof'
             )
 
@@ -91,9 +98,8 @@ function Push-DscConfiguration {
 
             Write-Verbose "Attempting to apply $RemoteConfigDocumentPath on $($session.ComputerName)"
             Invoke-Command -Session $Session -scriptblock {
-                Start-DscConfiguration -Wait -Force -Path $Using:RemoteStagingPath -Verbose -ErrorAction Stop
+                Start-DscConfiguration -Wait -Force -Path $Using:ResolvedRemoteStagingPath -Verbose -ErrorAction Stop
             }
         }
     }
-
 }

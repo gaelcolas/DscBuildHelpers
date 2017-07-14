@@ -20,5 +20,5 @@ Then 'the DSC Configuration is applied successfully' {
 
 Then 'we call Push-DscConfiguration to apply mof with dependencies' {
     $RelativePathToDemo = "$PSScriptRoot/../../DscBuildHelpers/Examples/demo2/"
-    Push-DscConfiguration -ConfigurationDocument 'C:\TMP\DSC\Configurations\localhost.mof' -Session $Script:RemoteSession -WithModule (Get-ModuleFromFolder (gi "$RelativePathToDemo/modules/"))
+    Push-DscConfiguration -ConfigurationDocument 'C:\TMP\DSC\Configurations\localhost.mof' -Session $Script:RemoteSession -WithModule (Get-ModuleFromFolder (gi "$RelativePathToDemo/modules/")) -Confirm:$false
 }

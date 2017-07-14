@@ -42,7 +42,6 @@ PowerShellVersion = '5.0'
 # Modules that must be imported into the global environment prior to importing this module
 RequiredModules = @(
      'xDscResourceDesigner' #tested with 1.9.0.0
-    ,'PSDesiredStateConfiguration' #not needed?
     ,'xPSDesiredStateConfiguration' #tested with 5.0.0.0
 )
 

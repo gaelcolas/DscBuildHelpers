@@ -66,7 +66,7 @@ function Push-DscModuleToNode {
             ,ValueFromPipelineByPropertyName
             ,ValueFromRemainingArguments
         )]
-        $RemoteStagingPath = 'C:\TMP\DSC\modules\',
+        $RemoteStagingPath = '$Env:TMP\DSC\modules\',
 
         [Parameter(
             ,Position = 4
@@ -82,6 +82,13 @@ function Push-DscModuleToNode {
         # Find the modules already available remotely
         if (!$Force) {
             $RemoteModuleAvailable = Invoke-command -Session $Session -ScriptBlock {Get-Module -ListAvailable}
+        }
+        $ResolvedRemoteStagingPath = Invoke-command -Session $Session -ScriptBlock {
+            $ResolvedStagingPath = $ExecutionContext.InvokeCommand.ExpandString($Using:RemoteStagingPath)
+            if (!(Test-Path $ResolvedStagingPath)) {
+                mkdir -Force $ResolvedStagingPath
+            }
+            $ResolvedStagingPath
         }
 
         # Find the modules missing on remote node
@@ -117,17 +124,17 @@ function Push-DscModuleToNode {
                     Test-Path $FileName
                 } -ArgumentList $FileName))
             {
-                Write-Verbose "Copying $fileName* to $RemoteStagingPath"
+                Write-Verbose "Copying $fileName* to $ResolvedRemoteStagingPath"
                 Invoke-Command -Session $Session -ScriptBlock {
                     param($PathToZips)
                     if (!(Test-Path $PathToZips)) {
                         mkdir $PathToZips -Force
                     }
-                } -ArgumentList $RemoteStagingPath
+                } -ArgumentList $ResolvedRemoteStagingPath
 
                 Copy-Item -ToSession $Session `
                     -Path "$($StagingFolderPath)/$($module.Name)_$($module.Version)*" `
-                    -Destination $RemoteStagingPath `
+                    -Destination $ResolvedRemoteStagingPath `
                     -Force | Out-Null
             }
             else {
@@ -136,6 +143,7 @@ function Push-DscModuleToNode {
         }
 
         # Extract missing modules on remote node to PSModulePath
+        Write-Verbose "Expanding $ResolvedRemoteStagingPath/*.zip to $Env:CommonProgramW6432\WindowsPowerShell\Modules\$($Module.Name)\$($module.version)" 
         Invoke-Command -Session $Session -ScriptBlock {
             Param($MissingModules,$PathToZips)
             foreach ($module in $MissingModules) {
@@ -143,7 +151,6 @@ function Push-DscModuleToNode {
                 Write-Verbose "Expanding $PathToZips/$fileName to $Env:CommonProgramW6432\WindowsPowerShell\Modules\$($Module.Name)\$($module.version)" 
                 Expand-Archive -Path "$PathToZips/$fileName" -DestinationPath "$Env:ProgramW6432\WindowsPowerShell\Modules\$($Module.Name)\$($module.version)" -Force
             }
-        } -ArgumentList $MissingModules,$RemoteStagingPath
-        
+        } -ArgumentList $MissingModules,$ResolvedRemoteStagingPath
     }
 }
