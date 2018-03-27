@@ -1,5 +1,13 @@
-# DSC Build Helpers
+# DscBuildHelpers
 
-This module intend to provide features helpful for Building and managing configurations.
+Toolkit to help bootstrap the Compilation Stage of DSC Configurations, and the lifecycle management of those.
 
-In a very similar spirit than [BuildHelpers](https://github.com/gaelcolas/BuildHelpers), this module gathers tasks useful in a DSC Build pipeline.
+## Make it yours
+
+---
+Generated with Plaster and the SampleModule template
+
+
+This is a sample Readme
+
+## Make it yours
