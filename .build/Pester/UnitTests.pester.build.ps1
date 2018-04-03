@@ -28,6 +28,7 @@ task Run_Unit_Tests {
     "`tProject Name = $ProjectName"
     "`tUnit Tests   = $PathToUnitTests"
     "`tResult Folder= $BuildOutput\Unit\"
+    "`tPester Version= $((get-module pester).Version.ToString())"
     if($TestFromBuildOutput) {
         "`tTesting against compiled Module: $BuildOutput\$ProjectName"
     }

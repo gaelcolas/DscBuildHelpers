@@ -20,8 +20,10 @@ task Upload_Unit_Test_Results_To_AppVeyor -If {(property BuildSystem 'unknown') 
     }
 
     $TestOutputPath  = [system.io.path]::Combine($BuildOutput,'testResults','unit',$PesterOutputFormat)
-    $TestResultFiles = Get-ChildItem -Path $TestOutputPath -Filter *.xml
-    Write-Build Green "  Uploading test results [$($TestResultFiles.Name -join ', ')] to Appveyor"
-    $TestResultFiles | Add-TestResultToAppveyor
-    Write-Build Green "  Upload Complete"
+    if(Test-Path $TestOutputPath) {
+        $TestResultFiles = Get-ChildItem -Path $TestOutputPath -Filter *.xml
+        Write-Build Green "  Uploading test results [$($TestResultFiles.Name -join ', ')] to Appveyor"
+        $TestResultFiles | Add-TestResultToAppveyor
+        Write-Build Green "  Upload Complete"
+    }
 }

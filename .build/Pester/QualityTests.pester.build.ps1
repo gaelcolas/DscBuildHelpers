@@ -17,15 +17,15 @@ Param (
 
 # Synopsis: Making sure the Module meets some quality standard (help, tests)
 task Quality_Tests {
-    "`tProject Path = $ProjectPath"
+    "`tProject Path = $BuildRoot"
     "`tProject Name = $ProjectName"
     "`tQuality Tests   = $RelativePathToQualityTests"
 
-    $QualityTestPath = [io.DirectoryInfo][system.io.path]::Combine($ProjectPath,$ProjectName,$RelativePathToQualityTests)
+    $QualityTestPath = [io.DirectoryInfo][system.io.path]::Combine($BuildRoot,$ProjectName,$RelativePathToQualityTests)
     
     if (!$QualityTestPath.Exists -and
         (   #Try a module structure where the
-            ($QualityTestPath = [io.DirectoryInfo][system.io.path]::Combine($ProjectPath,$RelativePathToQualityTests)) -and
+            ($QualityTestPath = [io.DirectoryInfo][system.io.path]::Combine($BuildRoot,$RelativePathToQualityTests)) -and
             !$QualityTestPath.Exists
         )
     )
@@ -36,7 +36,7 @@ task Quality_Tests {
 
     "`tQualityTest Path: $QualityTestPath"
     if (![io.path]::IsPathRooted($BuildOutput)) {
-        $BuildOutput = Join-Path -Path $ProjectPath.FullName -ChildPath $BuildOutput
+        $BuildOutput = Join-Path -Path $BuildRoot -ChildPath $BuildOutput
     }
     
     $PSVersion = 'PSv{0}.{1}' -f $PSVersionTable.PSVersion.Major, $PSVersionTable.PSVersion.Minor
