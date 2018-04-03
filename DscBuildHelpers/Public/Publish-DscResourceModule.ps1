@@ -1,3 +1,4 @@
+
 function Publish-DscResourceModule {
     [cmdletbinding(SupportsShouldProcess=$true)]
     param (

@@ -15,7 +15,9 @@ function Assert-DscModuleResourceIsValid
 
     process
     {
-        $FailedDscResources = Get-FailedDscResource -DscResource $DscResources
+        foreach($DscResource in $DscResources) {
+            $FailedDscResources += Get-FailedDscResource -DscResource $DscResource
+        }
     }
 
     end

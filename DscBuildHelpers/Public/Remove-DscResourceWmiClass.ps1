@@ -1,15 +1,14 @@
+<#
+    .Synopsis
+        Removes a WMI class from the DSC namespace.
+    .Description
+        Removes a WMI class from the DSC namespace.
+    .Example
+        Get-DscResourceWmiClass -Class tmp* | Remove-DscResourceWmiClass
+    .Example
+        Remove-DscResourceWmiClass -Class 'tmpD460'
+#>
 function Remove-DscResourceWmiClass {
-    <#
-        .Synopsis
-            Removes a WMI class from the DSC namespace.
-        .Description
-            Removes a WMI class from the DSC namespace.
-        .Example
-            Get-DscResourceWmiClass -Class tmp* | Remove-DscResourceWmiClass
-        .Example
-            Remove-DscResourceWmiClass -Class 'tmpD460'
-
-    #>
     param (
         #The WMI Class name to remove.  Supports wildcards.
         [parameter(ValueFromPipeline, ValueFromPipelineByPropertyName)]

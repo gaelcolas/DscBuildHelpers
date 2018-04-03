@@ -18,7 +18,6 @@ function Clear-CachedDscResource {
             Write-Verbose 'Skipping killing the DSC Process'
         }
 
-
         Write-Verbose 'Clearing out any tmp WMI classes from tested resources.'
         Get-DscResourceWmiClass -class tmp* | remove-DscResourceWmiClass
     }

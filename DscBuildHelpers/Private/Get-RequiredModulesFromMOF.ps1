@@ -4,7 +4,7 @@
 # Also need to return PSModuleInfo, instead of @{ModuleName='<version>'}
 # Then probably worth promoting to public
 function Get-RequiredModulesFromMOF {
-<#
+    <#
     .SYNOPSIS
         Scans a Desired State Configuration .mof file and returns the declared/
         required modules.
@@ -51,6 +51,5 @@ function Get-RequiredModulesFromMOF {
         }
 
         Write-Output -InputObject $modules
-    
     } #end process
 } #end function Get-RequiredModulesFromMOF

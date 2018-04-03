@@ -1,31 +1,31 @@
 <#
-.SYNOPSIS
-Injects Modules via Session.
+    .SYNOPSIS
+    Injects Modules via PS Session.
 
-.DESCRIPTION
-Injects the missing modules on a remote node via a PSSession. 
-The module list is checked again the available modules from the remote computer,
-Any missing version is then zipped up and sent over the PS session,
-before being extracted in the root PSModulePath folder of the remote node.
+    .DESCRIPTION
+    Injects the missing modules on a remote node via a PSSession. 
+    The module list is checked again the available modules from the remote computer,
+    Any missing version is then zipped up and sent over the PS session,
+    before being extracted in the root PSModulePath folder of the remote node.
 
-.PARAMETER Module
-A list of Modules required on the remote node. Those missing will be packaged based
-on their Path.
+    .PARAMETER Module
+    A list of Modules required on the remote node. Those missing will be packaged based
+    on their Path.
 
-.PARAMETER StagingFolderPath
-Staging folder where the modules are being zipped up locally before being sent accross.
+    .PARAMETER StagingFolderPath
+    Staging folder where the modules are being zipped up locally before being sent accross.
 
-.PARAMETER Session
-Session to use to gather the missing modules and to copy the modules to.
+    .PARAMETER Session
+    Session to use to gather the missing modules and to copy the modules to.
 
-.PARAMETER RemoteStagingPath
-Path on the remote Node where the modules will be copied before extraction.
+    .PARAMETER RemoteStagingPath
+    Path on the remote Node where the modules will be copied before extraction.
 
-.PARAMETER Force
-Force all modules to be re-zipped, re-sent, and re-extracted to the target node.
+    .PARAMETER Force
+    Force all modules to be re-zipped, re-sent, and re-extracted to the target node.
 
-.EXAMPLE
-Push-DscModuleToNode -Module (Get-ModuleFromFolder C:\src\SampleKitchen\modules) -Session $RemoteSession -StagingFolderPath "C:\BuildOutput"
+    .EXAMPLE
+    Push-DscModuleToNode -Module (Get-ModuleFromFolder C:\src\SampleKitchen\modules) -Session $RemoteSession -StagingFolderPath "C:\BuildOutput"
 
 #> 
 function Push-DscModuleToNode {
