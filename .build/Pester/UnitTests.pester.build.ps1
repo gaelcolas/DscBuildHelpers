@@ -97,7 +97,7 @@ task Run_Unit_Tests {
         CodeCoverage = $ListOfTestedFile
         PassThru     = $true
     }
-    Import-module Pester -ErrorAction Stop
+    Import-module Pester -ErrorAction Stop -Force
     if($TestFromBuildOutput) {
         Import-Module -Force ("$BuildOutput\$ProjectName" -replace '\\$')
     }
