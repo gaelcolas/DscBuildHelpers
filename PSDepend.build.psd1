@@ -17,4 +17,6 @@
     #required for DSC authoring
     xDscResourceDesigner = 'latest'
     xPSDesiredStateConfiguration = 'latest'
+    PackageManagement = 'latest'
+    PowerShellGet = 'latest'
 }

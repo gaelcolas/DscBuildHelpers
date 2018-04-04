@@ -24,11 +24,18 @@ task Deploy_with_PSDeploy {
     }
 
     $DeployFile =  [io.path]::Combine($BuildRoot, $DeployConfig)
-    
+    Remove-Module PackageManagement,PowerShellGet -Force
+
+    Get-PackageProvider -Name PowerShellGet -ListAvailable | Select -first 1 | Foreach-object {
+        Import-PackageProvider -RequiredVersion $_.Version -Name PowerShellGet -Force
+        Import-module PowerShellGet
+    }
+
     "  Deploying Module based on $DeployConfig config"
     "  Module Version is $ModuleVersion"
     $psd1 = Import-PowerShellDataFile -Path "$BuildOutput\$ProjectName\$ProjectName.psd1"
     "  PSD1 Module Version: $($psd1.ModuleVersion)"
+    " PowerShellGet: $((Get-Module PowerShellGet).Version)"
     
     $InvokePSDeployArgs = @{
         Path    = $DeployFile
