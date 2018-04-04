@@ -16,6 +16,8 @@ Param (
     $GalleryProxy,
     
     $ModuleVersion = $(
+            Write-Host "APPVEYOR_BUILD_VERSION: $Env:APPVEYOR_BUILD_VERSION. Null? $([string]::IsNullOrEmpty($env:APPVEYOR_BUILD_VERSION))"
+
             if(![string]::IsNullOrEmpty($env:APPVEYOR_BUILD_VERSION)) {
                 $Env:ModuleVersion = $env:APPVEYOR_BUILD_VERSION
             } else { 
