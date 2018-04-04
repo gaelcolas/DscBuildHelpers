@@ -14,6 +14,13 @@ Param (
 
     [Uri]
     $GalleryProxy,
+    
+    $ModuleVersion = $(
+            if(![string]::IsNullOrEmpty($env:APPVEYOR_BUILD_VERSION)) {
+                $env:APPVEYOR_BUILD_VERSION
+            } else { 
+                Get-NextNugetPackageVersion -Name 'DscBuildHelpers'
+            } ),
 
     [Switch]
     $ForceEnvironmentVariables = [switch]$true,

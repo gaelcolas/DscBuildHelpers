@@ -10,7 +10,7 @@ ModuleVersion = '0.0.1'
 GUID = '23ccd4bf-0a52-4077-986f-c153893e5a6a'
 
 # Author of this module
-Author = 'Steven Murawski, Gael Colas'
+Author = 'Gael Colas'
 
 # Company or vendor of this module
 #CompanyName = 'SynEdgy Limited'
