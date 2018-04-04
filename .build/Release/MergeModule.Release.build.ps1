@@ -10,8 +10,13 @@
     
     [string]
     $ModuleVersion = (property ModuleVersion $(
-        if($ModuleVersion = Get-NextPSGalleryVersion -Name $ProjectName -ea 0) { $ModuleVersion } else { '0.0.1' }
-        )),
+        Write-Warning 'Retrieving latest PSGallery Version'
+        if($ModuleVersion = Get-NextNugetPackageVersion -Name $ProjectName `
+                -PackageSourceUrl 'https://www.powershellgallery.com/api/v2/' -ea 0) 
+        {
+                     $ModuleVersion 
+        } else { '0.0.1' }
+    )),
 
     $MergeList = (property MergeList @('enum*','class*','priv*','pub*') ),
     

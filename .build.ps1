@@ -17,10 +17,11 @@ Param (
     
     $ModuleVersion = $(
             if(![string]::IsNullOrEmpty($env:APPVEYOR_BUILD_VERSION)) {
-                $env:APPVEYOR_BUILD_VERSION
+                $Env:ModuleVersion = $env:APPVEYOR_BUILD_VERSION
             } else { 
-                Get-NextNugetPackageVersion -Name 'DscBuildHelpers'
-            } ),
+                $Env:ModuleVersion = Get-NextNugetPackageVersion -Name 'DscBuildHelpers' -PackageSourceUrl 'https://www.powershellgallery.com/api/v2/'
+            }
+            $Env:ModuleVersion ),
 
     [Switch]
     $ForceEnvironmentVariables = [switch]$true,
