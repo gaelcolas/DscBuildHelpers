@@ -11,10 +11,10 @@
     [string]
     $ModuleVersion = (property ModuleVersion $(
         Write-Warning 'Retrieving latest PSGallery Version'
-        if($ModuleVersion = Get-NextNugetPackageVersion -Name $ProjectName `
+        if($lastModuleVersion = Get-NextNugetPackageVersion -Name $ProjectName `
                 -PackageSourceUrl 'https://www.powershellgallery.com/api/v2/' -ea 0) 
         {
-                     $ModuleVersion 
+                     $lastModuleVersion
         } else { '0.0.1' }
     )),
 
