@@ -25,7 +25,10 @@ task Deploy_with_PSDeploy {
 
     $DeployFile =  [io.path]::Combine($BuildRoot, $DeployConfig)
     
-    "Deploying Module based on $DeployConfig config"
+    "  Deploying Module based on $DeployConfig config"
+    "  Module Version is $ModuleVersion"
+    $psd1 = Import-PowerShellDataFile -Path "$BuildOutput\$ProjectName\$ProjectName.psd1"
+    "  PSD1 Module Version: $($psd1.ModuleVersion)"
     
     $InvokePSDeployArgs = @{
         Path    = $DeployFile
