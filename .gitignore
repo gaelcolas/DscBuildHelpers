@@ -1,3 +1,4 @@
+.temp/*
 BuildOutput/*
 DscBuildOutput/*
 modules/*
