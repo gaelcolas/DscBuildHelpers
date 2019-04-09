@@ -1,45 +1,32 @@
 #Requires -Modules  xPSDesiredStateConfiguration
-function Compress-DscResourceModule {
-    [cmdletbinding(SupportsShouldProcess=$true)]
-    param (
-        [Parameter(
-            #Mandatory
-        )]
-        [ValidateNotNullOrEmpty()]
-        $DscBuildSourceResources,
 
-        [Parameter(
-            Mandatory
-        )]
+function Compress-DscResourceModule {
+    [CmdletBinding(SupportsShouldProcess = $true)]
+    param (
+        [Parameter(Mandatory)]
         [ValidateNotNullOrEmpty()]
         [String]
         $DscBuildOutputModules,
 
-        [Parameter(
-            Mandatory,
-            ValueFromPipeline
-        )]
+        [Parameter(Mandatory, ValueFromPipeline)]
         [AllowNull()]
-        [PSmoduleInfo[]]
+        [psmoduleinfo[]]
         $Modules
     )
 
     begin {
-        if (!(Test-Path $DscBuildOutputModules)) {
-            mkdir $DscBuildOutputModules -Force
+        if (-not (Test-Path -Path $DscBuildOutputModules)) {
+            mkdir -Path $DscBuildOutputModules -Force
         }
     }
     Process {
-        Foreach ($Module in $Modules) {
-            if (
-                 $pscmdlet.shouldprocess(
-                    "Compress $Module $($Module.Version) from $(Split-Path -parent $Module.Path) to $DscBuildOutputModules"
-                 )
-                )
-            {
+        Foreach ($module in $Modules) {
+            if ($PSCmdlet.ShouldProcess("Compress $Module $($Module.Version) from $(Split-Path -parent $Module.Path) to $DscBuildOutputModules")) {
                 Write-Verbose "Publishing Module $(Split-Path -parent $Module.Path) to $DscBuildOutputModules"
-                $Module |  xPSDesiredStateConfiguration\Publish-ModuleToPullServer -ModuleBase (Split-Path -parent $Module.Path) `
-                                                     -OutputFolderPath $DscBuildOutputModules
+                $destinationPath = Join-Path -Path $DscBuildOutputModules -ChildPath "$($module.Name)_$($module.Version).zip"
+                Compress-Archive -Path "$($module.ModuleBase)\*" -DestinationPath $destinationPath
+                
+                (Get-FileHash -Path $destinationPath).Hash | Set-Content -Path "$destinationPath.checksum"
             }
         }
     }
