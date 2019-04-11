@@ -1,5 +1,3 @@
-#Requires -Modules  xPSDesiredStateConfiguration
-
 function Compress-DscResourceModule {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param (
