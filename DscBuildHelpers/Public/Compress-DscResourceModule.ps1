@@ -23,8 +23,8 @@ function Compress-DscResourceModule {
                 Write-Verbose "Publishing Module $(Split-Path -parent $Module.Path) to $DscBuildOutputModules"
                 $destinationPath = Join-Path -Path $DscBuildOutputModules -ChildPath "$($module.Name)_$($module.Version).zip"
                 Compress-Archive -Path "$($module.ModuleBase)\*" -DestinationPath $destinationPath
-                
-                (Get-FileHash -Path $destinationPath).Hash | Set-Content -Path "$destinationPath.checksum"
+
+                (Get-FileHash -Path $destinationPath).Hash | Set-Content -Path "$destinationPath.checksum" -NoNewline
             }
         }
     }
