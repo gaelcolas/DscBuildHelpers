@@ -17,7 +17,5 @@
         @{ ModuleName = 'xDscResourceDesigner'; ModuleVersion = '1.9.0.0'} #tested with 1.9.0.0
     )
 
-    ScriptsToProcess = @('.\ScriptsToProcess\Get-DscSplattedResource.ps1')
-
     FunctionsToExport = '*'
 }
