@@ -9,7 +9,7 @@ function Get-DscCimInstanceReference {
         $ParameterName,
 
         [Parameter()]
-        [hashtable]
+        [object]
         $Data
     )
 
