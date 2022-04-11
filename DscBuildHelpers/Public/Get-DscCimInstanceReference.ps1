@@ -17,15 +17,7 @@ function Get-DscCimInstanceReference {
         if ($allDscResourcePropertiesTable.ContainsKey("$($ResourceName)-$($ParameterName)")) {
             $p = $allDscResourcePropertiesTable."$($ResourceName)-$($ParameterName)"
             $typeConstraint = $p.TypeConstraint -replace '\[\]', ''
-            if ($Data -is [array]) {
-                foreach ($item in $Data) {
-                    Get-DscSplattedResource -ResourceName $typeConstraint -Properties $item -NoInvoke
-                }
-            }
-            else {
-                Get-DscSplattedResource -ResourceName $typeConstraint -Properties $Data -NoInvoke
-            }
-
+            Get-DscSplattedResource -ResourceName $typeConstraint -Properties $Data -NoInvoke
         }
     }
     else {
