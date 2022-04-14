@@ -1,7 +1,6 @@
-# DscBuildHelpers
-[![Build status](https://ci.appveyor.com/api/projects/status/3jp34068xj2aq50g?svg=true)](https://ci.appveyor.com/project/gaelcolas/dscbuildhelpers)
+# xxx
 
-Toolkit to help bootstrap the Compilation Stage of DSC Configurations, and the lifecycle management of those.
+none
 
 ## Make it yours
 

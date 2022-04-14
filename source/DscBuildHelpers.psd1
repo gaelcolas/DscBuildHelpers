@@ -7,7 +7,7 @@
 
     Author            = 'Gael Colas'
 
-    Copyright         = '(c) 2017 Gael Colas. All rights reserved.'
+    Copyright         = '(c) 2022 Gael Colas. All rights reserved.'
 
     Description       = 'Build Helpers for DSC Resources and Configurations'
 
