@@ -116,31 +116,10 @@ stages:
               targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
 
           - task: DownloadPipelineArtifact@2
-            displayName: 'Download Test Artifact macOS'
-            inputs:
-              buildType: 'current'
-              artifactName: 'CodeCoverageMacOS'
-              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)'
-
-          - task: DownloadPipelineArtifact@2
-            displayName: 'Download Test Artifact Linux'
-            inputs:
-              buildType: 'current'
-              artifactName: 'CodeCoverageLinux'
-              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)'
-
-          - task: DownloadPipelineArtifact@2
             displayName: 'Download Test Artifact Windows (PS 5.1)'
             inputs:
               buildType: 'current'
               artifactName: 'CodeCoverageWinPS51'
-              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)'
-
-          - task: DownloadPipelineArtifact@2
-            displayName: 'Download Test Artifact Windows (PS7)'
-            inputs:
-              buildType: 'current'
-              artifactName: 'CodeCoverageWinPS7'
               targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)'
 
           # Make sure to update build.yaml to support these tasks, then uncomment these tasks:
@@ -171,6 +150,7 @@ stages:
         succeeded(),
         or(
           eq(variables['Build.SourceBranch'], 'refs/heads/master'),
+          eq(variables['Build.SourceBranch'], 'refs/heads/main'),
           startsWith(variables['Build.SourceBranch'], 'refs/tags/')
         ),
         contains(variables['System.TeamFoundationCollectionUri'], 'MyOrgName')
