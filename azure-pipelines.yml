@@ -96,9 +96,6 @@ stages:
       - job: Code_Coverage
         displayName: 'Publish Code Coverage'
         dependsOn:
-          - test_macos
-          - test_linux
-          - test_windows_core
           - test_windows_ps
         pool:
           vmImage: 'ubuntu-latest'
