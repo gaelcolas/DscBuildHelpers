@@ -1,7 +1,7 @@
 trigger:
   branches:
     include:
-    - master
+    - main
   paths:
     exclude:
     - CHANGELOG.md
@@ -15,7 +15,7 @@ variables:
   buildFolderName: output
   buildArtifactName: output
   testResultFolderName: testResults
-  defaultBranch: master
+  defaultBranch: main
 
 stages:
   - stage: Build
@@ -149,11 +149,10 @@ stages:
       and(
         succeeded(),
         or(
-          eq(variables['Build.SourceBranch'], 'refs/heads/master'),
           eq(variables['Build.SourceBranch'], 'refs/heads/main'),
           startsWith(variables['Build.SourceBranch'], 'refs/tags/')
         ),
-        contains(variables['System.TeamFoundationCollectionUri'], 'MyOrgName')
+        contains(variables['System.TeamFoundationCollectionUri'], 'Synedgy')
       )
     jobs:
       - job: Deploy_Module
