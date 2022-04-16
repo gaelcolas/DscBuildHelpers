@@ -34,7 +34,11 @@ function Initialize-DscResourceMetaInfo
         }
         else
         {
-            Get-DscResourceProperty -ModuleInfo ($modulesWithDscResources | Where-Object Name -EQ $dscResource.ModuleName) -ResourceName $dscResource.Name | Where-Object { $_.TypeConstraint -like 'MSFT_*' -and $_.TypeConstraint -ne 'MSFT_Credential' }
+            Get-DscResourceProperty -ModuleInfo ($modulesWithDscResources |
+            Where-Object Name -EQ $dscResource.ModuleName) -ResourceName $dscResource.Name |
+            Where-Object {
+                $_.TypeConstraint -like 'MSFT_*' -and $_.TypeConstraint -notin 'MSFT_Credential', 'MSFT_KeyValuePair', 'MSFT_KeyValuePair[]'
+            }
         }
 
         foreach ($cimProperty in $cimProperties)
