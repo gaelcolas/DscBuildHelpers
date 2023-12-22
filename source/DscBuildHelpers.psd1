@@ -18,4 +18,29 @@
     )
 
     FunctionsToExport = '*'
+
+    PrivateData = @{
+
+        PSData = @{
+
+            Prerelease = ''
+
+            # Tags applied to this module. These help with module discovery in online galleries.
+            Tags         = @('DesiredStateConfiguration', 'DSC', 'BuildHelpers', 'DSCResource')
+
+            # A URL to the license for this module.
+            #LicenseUri = 'https://github.com/gaelcolas/DscBuildHelpers/blob/main/LICENSE'
+
+            # A URL to the main website for this project.
+            ProjectUri = 'https://github.com/gaelcolas/DscBuildHelpers'
+
+            # A URL to an icon representing this module.
+            IconUri      = 'https://dsccommunity.org/images/DSC_Logo_300p.png'
+
+            # ReleaseNotes of this module
+            ReleaseNotes = ''
+
+        } # End of PSData hashtable
+
+    } # End of PrivateData hashtable
 }
