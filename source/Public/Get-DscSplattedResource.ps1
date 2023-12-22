@@ -85,7 +85,7 @@ function Get-DscSplattedResource
         }
         else
         {
-            $null = $stringBuilder.AppendLine("$PropertyName = `$(`$Parameters['$PropertyName'])")
+            $null = $stringBuilder.AppendLine("$PropertyName = `$Parameters['$PropertyName']")
         }
     }
 
