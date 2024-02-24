@@ -11,22 +11,33 @@ function Initialize-DscResourceMetaInfo
 
         [Parameter()]
         [switch]
-        $Force
+        $Force,
+
+        [Parameter()]
+        [switch]
+        $PassThru
     )
 
-    if ($script:allDscResourcePropertiesTable -and -not $Force)
+    if ($script:allDscResourcePropertiesTable.Count -ne 0 -and -not $Force)
     {
-        return
+        if ($PassThru)
+        {
+            return $script:allDscResourcePropertiesTable
+        }
+        else
+        {
+            return
+        }
     }
 
     $allModules = Get-ModuleFromFolder -ModuleFolder $ModulePath
-    $allDscResource = Get-DscResourceFromModuleInFolder -ModuleFolder $ModulePath -Modules $allModules
-    $modulesWithDscResources = $allDscResource | Select-Object -ExpandProperty ModuleName -Unique
+    $allDscResources = Get-DscResourceFromModuleInFolder -ModuleFolder $ModulePath -Modules $allModules
+    $modulesWithDscResources = $allDscResources | Select-Object -ExpandProperty ModuleName -Unique
     $modulesWithDscResources = $allModules | Where-Object Name -In $modulesWithDscResources
 
     $script:allDscResourcePropertiesTable = @{}
 
-    $script:allDscResourceProperties = foreach ($dscResource in $allDscResource)
+    $script:allDscResourceProperties = foreach ($dscResource in $allDscResources)
     {
         $cimProperties = if ($ReturnAllProperties)
         {
@@ -35,10 +46,11 @@ function Initialize-DscResourceMetaInfo
         else
         {
             Get-DscResourceProperty -ModuleInfo ($modulesWithDscResources |
-            Where-Object Name -EQ $dscResource.ModuleName) -ResourceName $dscResource.Name |
-            Where-Object {
-                $_.TypeConstraint -like 'MSFT_*' -and $_.TypeConstraint -notin 'MSFT_Credential', 'MSFT_KeyValuePair', 'MSFT_KeyValuePair[]'
-            }
+                    Where-Object Name -EQ $dscResource.ModuleName) -ResourceName $dscResource.Name |
+                    Where-Object {
+                        $_.TypeConstraint -match '(DSC|MSFT)_.+' -and
+                        $_.TypeConstraint -notin 'MSFT_Credential', 'MSFT_KeyValuePair', 'MSFT_KeyValuePair[]'
+                    }
         }
 
         foreach ($cimProperty in $cimProperties)
@@ -56,5 +68,10 @@ function Initialize-DscResourceMetaInfo
             $script:allDscResourcePropertiesTable."$($dscResource.Name)-$($cimProperty.Name)" = $cimProperty
         }
 
+    }
+
+    if ($PassThru)
+    {
+        $script:allDscResourcePropertiesTable
     }
 }

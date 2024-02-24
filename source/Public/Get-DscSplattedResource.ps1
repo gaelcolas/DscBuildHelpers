@@ -63,8 +63,7 @@ function Get-DscSplattedResource
 
                     foreach ($cimSubProperty in $cimPropertyValue.GetEnumerator())
                     {
-                        $null = $stringBuilder.AppendLine("$($cimSubProperty.Name) = `$(`$Parameters['$PropertyName'][$($i)]['$($cimSubProperty.Name)'])")
-
+                        $null = $stringBuilder.AppendLine("$($cimSubProperty.Name) = `$Parameters['$PropertyName'][$($i)]['$($cimSubProperty.Name)']")
                     }
 
                     $null = $stringBuilder.AppendLine("}")
@@ -77,7 +76,7 @@ function Get-DscSplattedResource
             {
                 foreach ($cimProperty in $cimProperties.GetEnumerator())
                 {
-                    $null = $stringBuilder.AppendLine("$($cimProperty.Name) = `$(`$Parameters['$PropertyName']['$($cimProperty.Name)'])")
+                    $null = $stringBuilder.AppendLine("$($cimProperty.Name) = `$Parameters['$PropertyName']['$($($cimProperty.Name))']")
                 }
 
                 $null = $stringBuilder.AppendLine("}")
