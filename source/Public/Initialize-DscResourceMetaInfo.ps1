@@ -39,15 +39,15 @@ function Initialize-DscResourceMetaInfo
 
     $script:allDscResourceProperties = foreach ($dscResource in $allDscResources)
     {
+        $moduleInfo = $modulesWithDscResources |
+                Where-Object { $_.Name -EQ $dscResource.ModuleName -and $_.Version -eq $dscResource.Version }
+
         $cimProperties = if ($ReturnAllProperties)
         {
-            Get-DscResourceProperty -ModuleInfo ($modulesWithDscResources | Where-Object Name -EQ $dscResource.ModuleName) -ResourceName $dscResource.Name
+            Get-DscResourceProperty -ModuleInfo $moduleInfo -ResourceName $dscResource.Name
         }
         else
         {
-            $moduleInfo = $modulesWithDscResources |
-                Where-Object { $_.Name -EQ $dscResource.ModuleName -and $_.Version -eq $dscResource.Version }
-
             Get-DscResourceProperty -ModuleInfo $moduleInfo -ResourceName $dscResource.Name |
                 Where-Object {
                     $_.TypeConstraint -match '(DSC|MSFT)_.+' -and
