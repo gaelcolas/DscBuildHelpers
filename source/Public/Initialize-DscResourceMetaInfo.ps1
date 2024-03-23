@@ -35,6 +35,8 @@ function Initialize-DscResourceMetaInfo
     $modulesWithDscResources = $allDscResources | Select-Object -ExpandProperty ModuleName -Unique
     $modulesWithDscResources = $allModules | Where-Object Name -In $modulesWithDscResources
 
+    $standardCimTypes = Get-CimType
+
     $script:allDscResourcePropertiesTable = @{}
 
     $script:allDscResourceProperties = foreach ($dscResource in $allDscResources)
@@ -49,10 +51,7 @@ function Initialize-DscResourceMetaInfo
         else
         {
             Get-DscResourceProperty -ModuleInfo $moduleInfo -ResourceName $dscResource.Name |
-                Where-Object {
-                    $_.TypeConstraint -match '(DSC|MSFT)_.+' -and
-                    $_.TypeConstraint -notin 'MSFT_Credential', 'MSFT_KeyValuePair', 'MSFT_KeyValuePair[]'
-                }
+            Where-Object TypeConstraint -NotIn $standardCimTypes.CimType
         }
 
         foreach ($cimProperty in $cimProperties)
