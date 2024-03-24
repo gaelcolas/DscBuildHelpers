@@ -24,6 +24,8 @@ function Get-DscSplattedResource
         $script:allDscResourcePropertiesTableWarningShown = $true
     }
 
+    $standardCimTypes = Get-StandardCimType
+
     # Remove Case Sensitivity of ordered Dictionary or Hashtables
     $Properties = @{} + $Properties
 
@@ -63,7 +65,40 @@ function Get-DscSplattedResource
 
                     foreach ($cimSubProperty in $cimPropertyValue.GetEnumerator())
                     {
-                        $null = $stringBuilder.AppendLine("$($cimSubProperty.Name) = `$Parameters['$PropertyName'][$($i)]['$($cimSubProperty.Name)']")
+                        if ($cimType.Type.GetElementType().GetProperty($cimSubProperty.Name).PropertyType.IsArray)
+                        {
+                            $null = $stringBuilder.AppendLine("$($cimSubProperty.Name) = @(")
+                            $arrayItemTypeName = $cimType.Type.GetElementType().GetProperty($cimSubProperty.Name).PropertyType.GetElementType().Name
+
+                            $j = 0
+
+                            $isCimSubArray = $cimType.Type.GetElementType().GetProperty($cimSubProperty.Name).PropertyType.GetElementType().FullName -notin $standardCimTypes.DotNetType
+
+                            foreach ($arrayItem in $cimSubProperty.Value)
+                            {
+                                if ($isCimSubArray)
+                                {
+                                    $null = $stringBuilder.AppendLine("$arrayItemTypeName {")
+
+                                    foreach ($arrayItemKey in $arrayItem.Keys)
+                                    {
+                                        $null = $stringBuilder.AppendLine("$arrayItemKey = `$Parameters['$PropertyName'][$($i)]['$($cimSubProperty.Name)'][$($j)]['$($arrayItemKey)']")
+                                    }
+
+                                    $null = $stringBuilder.AppendLine('}')
+                                }
+                                else
+                                {
+                                    $null = $stringBuilder.AppendLine("@(`$Parameters['$PropertyName'][$($i)]['$($cimSubProperty.Name)'])[$($j)]")
+                                }
+                                $j++
+                            }
+                            $null = $stringBuilder.AppendLine(')')
+                        }
+                        else
+                        {
+                            $null = $stringBuilder.AppendLine("$($cimSubProperty.Name) = `$Parameters['$PropertyName'][$($i)]['$($cimSubProperty.Name)']")
+                        }
                     }
 
                     $null = $stringBuilder.AppendLine("}")
