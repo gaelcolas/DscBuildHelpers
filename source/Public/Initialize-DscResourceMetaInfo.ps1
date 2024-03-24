@@ -35,7 +35,7 @@ function Initialize-DscResourceMetaInfo
     $modulesWithDscResources = $allDscResources | Select-Object -ExpandProperty ModuleName -Unique
     $modulesWithDscResources = $allModules | Where-Object Name -In $modulesWithDscResources
 
-    $standardCimTypes = Get-CimType
+    $standardCimTypes = Get-StandardCimType
 
     $script:allDscResourcePropertiesTable = @{}
 
