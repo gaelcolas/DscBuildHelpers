@@ -11,34 +11,47 @@ function Initialize-DscResourceMetaInfo
 
         [Parameter()]
         [switch]
-        $Force
+        $Force,
+
+        [Parameter()]
+        [switch]
+        $PassThru
     )
 
-    if ($script:allDscResourcePropertiesTable -and -not $Force)
+    if ($script:allDscResourcePropertiesTable.Count -ne 0 -and -not $Force)
     {
-        return
-    }
-
-    $allModules = Get-ModuleFromFolder -ModuleFolder $ModulePath
-    $allDscResource = Get-DscResourceFromModuleInFolder -ModuleFolder $ModulePath -Modules $allModules
-    $modulesWithDscResources = $allDscResource | Select-Object -ExpandProperty ModuleName -Unique
-    $modulesWithDscResources = $allModules | Where-Object Name -In $modulesWithDscResources
-
-    $script:allDscResourcePropertiesTable = @{}
-
-    $script:allDscResourceProperties = foreach ($dscResource in $allDscResource)
-    {
-        $cimProperties = if ($ReturnAllProperties)
+        if ($PassThru)
         {
-            Get-DscResourceProperty -ModuleInfo ($modulesWithDscResources | Where-Object Name -EQ $dscResource.ModuleName) -ResourceName $dscResource.Name
+            return $script:allDscResourcePropertiesTable
         }
         else
         {
-            Get-DscResourceProperty -ModuleInfo ($modulesWithDscResources |
-            Where-Object Name -EQ $dscResource.ModuleName) -ResourceName $dscResource.Name |
-            Where-Object {
-                $_.TypeConstraint -like 'MSFT_*' -and $_.TypeConstraint -notin 'MSFT_Credential', 'MSFT_KeyValuePair', 'MSFT_KeyValuePair[]'
-            }
+            return
+        }
+    }
+
+    $allModules = Get-ModuleFromFolder -ModuleFolder $ModulePath
+    $allDscResources = Get-DscResourceFromModuleInFolder -ModuleFolder $ModulePath -Modules $allModules
+    $modulesWithDscResources = $allDscResources | Select-Object -ExpandProperty ModuleName -Unique
+    $modulesWithDscResources = $allModules | Where-Object Name -In $modulesWithDscResources
+
+    $standardCimTypes = Get-StandardCimType
+
+    $script:allDscResourcePropertiesTable = @{}
+
+    $script:allDscResourceProperties = foreach ($dscResource in $allDscResources)
+    {
+        $moduleInfo = $modulesWithDscResources |
+                Where-Object { $_.Name -EQ $dscResource.ModuleName -and $_.Version -eq $dscResource.Version }
+
+        $cimProperties = if ($ReturnAllProperties)
+        {
+            Get-DscResourceProperty -ModuleInfo $moduleInfo -ResourceName $dscResource.Name
+        }
+        else
+        {
+            Get-DscResourceProperty -ModuleInfo $moduleInfo -ResourceName $dscResource.Name |
+            Where-Object TypeConstraint -NotIn $standardCimTypes.CimType
         }
 
         foreach ($cimProperty in $cimProperties)
@@ -56,5 +69,10 @@ function Initialize-DscResourceMetaInfo
             $script:allDscResourcePropertiesTable."$($dscResource.Name)-$($cimProperty.Name)" = $cimProperty
         }
 
+    }
+
+    if ($PassThru)
+    {
+        $script:allDscResourcePropertiesTable
     }
 }

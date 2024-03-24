@@ -15,4 +15,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fixed TypeConstraint, 'MSFT_KeyValuePair' should be ignored.
+- Initialize-DscResourceMetaInfo:
+  - Fixed TypeConstraint, 'MSFT_KeyValuePair' should be ignored.
+  - Fixed non-working caching test.
+  - Added PassThru pattern for easier debugging.
+  - Considering CIM instances names DSC_* in addition to MSFT_*.
+- Get-DscResourceFromModuleInFolder:
+  - Redesigned the function. It did not work with PowerShell 7 and
+    PSDesiredStateConfiguration 2.0.7.
+- Changed the remaining lines in alignment to PR #14.

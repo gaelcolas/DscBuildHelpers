@@ -1,53 +1,59 @@
-function Get-DscResourceFromModuleInFolder {
+function Get-DscResourceFromModuleInFolder
+{
     [cmdletbinding()]
     param (
-        [Parameter(
-            Mandatory,
-            ValueFromPipelineByPropertyName
-        )]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
+        [string]
         $ModuleFolder,
-        
-        [Parameter(
-            Mandatory,
-            ValueFromPipeline,
-            ValueFromPipelineByPropertyName
-        )]
+
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.PSModuleInfo[]]
         $Modules
-        
     )
-    Begin {
-        $oldPSModulePath = $Env:PSmodulePath
-        $Env:PSmodulePath = $ModuleFolder
-        Write-Verbose "Retrieving all resources for $ModuleFolder."
-        $AllDscResource = Get-DscResource
-        $Env:PSmodulePath = $oldPSModulePath
+
+    begin
+    {
+        $oldPSModulePath = $env:PSModulePath
+        $env:PSModulePath = $ModuleFolder
+
+        Write-Verbose "Retrieving all resources for '$ModuleFolder'."
+        $dscResources = Get-DscResource
+
+        $env:PSModulePath = $oldPSModulePath
+
+        $result = @()
     }
-    Process {
-        
-        Write-Verbose "Filtering the $($AllDscResource.Count) resources."
-        Write-Debug ('Resources {0}' -f ($AllDscResource | Format-Table -AutoSize | out-string))
-        $AllDscResource.Where{
-            $isResourceInModulesToPublish = Foreach ($Module in $Modules) {
-                if ( $null -eq $_.Module ) {
-                    Write-Debug "Excluding resource $($_.Name) without Module"
-                    Return $false
-                }
-                elseif ( !(compare-object $_.Module $Module -Property ModuleType, Version, Name) ) {
-                    Write-Debug "Resource $($_.Name) matches one of the supplied Modules."
-                    Return $true
-                }
+
+    process
+    {
+        Write-Verbose "Filtering the $($dscResources.Count) resources."
+        Write-Debug ($dscResources | Format-Table -AutoSize | Out-String)
+
+        foreach ($dscResource in $dscResources)
+        {
+            if ($null -eq $dscResource.Module)
+            {
+                Write-Debug "Excluding resource '$($dscResource.Name) - $($dscResource.Version)', it is not part of a module."
+                continue
             }
-            if (!$isResourceInModulesToPublish) {
-                Write-Debug "`tExcluding $($_.Name) $($_.Version)"
-                Return $false
-            }
-            else {
-                Write-Debug "`tIncluding $($_.Name) $($_.Version)"
-                Return $true
+
+            foreach ($module in $Modules)
+            {
+
+                if (-not (Compare-Object -ReferenceObject $dscResource.Module -DifferenceObject $Module -Property ModuleType, Version, Name))
+                {
+                    Write-Debug "Resource $($dscResource.Name) matches one of the supplied Modules."
+                    Write-Debug "`tIncluding $($dscResource.Name) $($dscResource.Version)"
+                    $result += $dscResource
+                }
             }
         }
+    }
+
+    end
+    {
+        $result
     }
 }
