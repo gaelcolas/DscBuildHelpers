@@ -8,19 +8,25 @@
     .Example
         Remove-DscResourceWmiClass -Class 'tmpD460'
 #>
-function Remove-DscResourceWmiClass {
+function Remove-DscResourceWmiClass
+{
+    [CmdletBinding()]
     param (
         #The WMI Class name to remove.  Supports wildcards.
-        [parameter(ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [alias('Name')]
+        [Parameter(ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [Alias('Name')]
         [string]
         $ResourceType
     )
-    begin {
-        $DscNamespace = "root/Microsoft/Windows/DesiredStateConfiguration"
+
+    begin
+    {
+        $dscNamespace = 'root/Microsoft/Windows/DesiredStateConfiguration'
     }
-    process {
+
+    process
+    {
         #Have to use WMI here because I can't find how to delete a WMI instance via the CIM cmdlets.
-        (Get-wmiobject -Namespace $DscNamespace -list -Class $ResourceType).psbase.delete()
+        (Get-WmiObject -Namespace $dscNamespace -List -Class $ResourceType).psbase.Delete()
     }
 }

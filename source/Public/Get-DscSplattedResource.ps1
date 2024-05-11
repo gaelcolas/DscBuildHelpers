@@ -1,7 +1,7 @@
 function Get-DscSplattedResource
 {
     [CmdletBinding()]
-    Param(
+    Param (
         [Parameter(Mandatory = $true)]
         [String]
         $ResourceName,
@@ -19,7 +19,8 @@ function Get-DscSplattedResource
         $NoInvoke
     )
 
-    if (-not $script:allDscResourcePropertiesTable -and -not $script:allDscResourcePropertiesTableWarningShown) {
+    if (-not $script:allDscResourcePropertiesTable -and -not $script:allDscResourcePropertiesTableWarningShown)
+    {
         Write-Warning -Message "The 'allDscResourcePropertiesTable' is not defined. This will be an expensive operation. Resources with MOF sub-types are only supported when calling 'Initialize-DscResourceMetaInfo' once before starting the compilation process."
         $script:allDscResourcePropertiesTableWarningShown = $true
     }
@@ -42,14 +43,22 @@ function Get-DscSplattedResource
         $null = $stringBuilder.AppendLine("$ResourceName {")
     }
 
-    foreach ($PropertyName in $Properties.Keys) {
+    foreach ($PropertyName in $Properties.Keys)
+    {
 
         $cimType = $allDscResourcePropertiesTable."$ResourceName-$PropertyName"
         if ($cimType)
         {
-            $isCimArray = $cimType.TypeConstraint.EndsWith("[]")
+            $isCimArray = $cimType.TypeConstraint.EndsWith('[]')
             $cimProperties = $Properties.$PropertyName
-            $null = $stringBuilder.AppendLine("$PropertyName = {0}" -f $(if ($isCimArray) { '@(' } else { "$($cimType.TypeConstraint.Replace('[]', '')) {" }))
+            $null = $stringBuilder.AppendLine("$PropertyName = {0}" -f $(if ($isCimArray)
+                    {
+                        '@('
+                    }
+                    else
+                    {
+                        "$($cimType.TypeConstraint.Replace('[]', '')) {"
+                    }))
             if ($isCimArray)
             {
                 if ($Properties.$PropertyName -isnot [array])
@@ -61,7 +70,7 @@ function Get-DscSplattedResource
                 foreach ($cimPropertyValue in $cimProperties)
                 {
                     $null = $stringBuilder.AppendLine($cimType.TypeConstraint.Replace('[]', ''))
-                    $null = $stringBuilder.AppendLine("{")
+                    $null = $stringBuilder.AppendLine('{')
 
                     foreach ($cimSubProperty in $cimPropertyValue.GetEnumerator())
                     {
@@ -101,11 +110,14 @@ function Get-DscSplattedResource
                         }
                     }
 
-                    $null = $stringBuilder.AppendLine("}")
+                    $null = $stringBuilder.AppendLine('}')
                     $i++
                 }
 
-                $null = $stringBuilder.AppendLine('{0}' -f $(if ($isCimArray) { ')' }))
+                $null = $stringBuilder.AppendLine('{0}' -f $(if ($isCimArray)
+                        {
+                            ')'
+                        }))
             }
             else
             {
@@ -114,7 +126,7 @@ function Get-DscSplattedResource
                     $null = $stringBuilder.AppendLine("$($cimProperty.Name) = `$Parameters['$PropertyName']['$($($cimProperty.Name))']")
                 }
 
-                $null = $stringBuilder.AppendLine("}")
+                $null = $stringBuilder.AppendLine('}')
             }
         }
         else
@@ -123,7 +135,7 @@ function Get-DscSplattedResource
         }
     }
 
-    $null = $stringBuilder.AppendLine("}")
+    $null = $stringBuilder.AppendLine('}')
     Write-Debug -Message ('Generated Resource Block = {0}' -f $stringBuilder.ToString())
 
     if ($NoInvoke)
@@ -135,7 +147,8 @@ function Get-DscSplattedResource
         if ($Properties)
         {
             [scriptblock]::Create($stringBuilder.ToString()).Invoke($Properties)
-        } else
+        }
+        else
         {
             [scriptblock]::Create($stringBuilder.ToString()).Invoke()
         }

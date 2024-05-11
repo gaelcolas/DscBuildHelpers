@@ -1,28 +1,32 @@
-function Get-DscFailedResource {
-    [cmdletbinding()]
+function Get-DscFailedResource
+{
+    [CmdletBinding()]
     param (
-        [Parameter(
-            Mandatory,
-            ValueFromPipeline
-        )]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [Microsoft.PowerShell.DesiredStateConfiguration.DscResourceInfo[]]
         $DscResource
     )
 
-    Process {
-        foreach ($resource in $DscResource) {
-            if ($resource.Path) {
+    process
+    {
+        foreach ($resource in $DscResource)
+        {
+            if ($resource.Path)
+            {
                 $resourceNameOrPath = Split-Path $resource.Path -Parent
             }
-            else {
+            else
+            {
                 $resourceNameOrPath = $resource.Name
             }
-            
-            if (-not (Test-xDscResource -Name $resourceNameOrPath)) {
+
+            if (-not (Test-xDscResource -Name $resourceNameOrPath))
+            {
                 Write-Warning "`tResources $($_.name) is invalid."
                 $resource
             }
-            else {
+            else
+            {
                 Write-Verbose ('DSC Resource Name {0} {1} is Valid' -f $resource.Name, $resource.Version)
             }
         }

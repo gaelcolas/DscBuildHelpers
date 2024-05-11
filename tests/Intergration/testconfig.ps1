@@ -1,8 +1,8 @@
-Configuration MyDscBuildHelperTest {
+configuration MyDscBuildHelperTest {
     $props = @{
-        Ensure = 'Present'
-        Type = 'File'
-        Contents = 'blah'
+        Ensure          = 'Present'
+        Type            = 'File'
+        Contents        = 'blah'
         DestinationPath = 'C:\test.txt'
     }
 

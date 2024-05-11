@@ -1,45 +1,52 @@
 
-function Publish-DscResourceModule {
-    [cmdletbinding(SupportsShouldProcess=$true)]
+function Publish-DscResourceModule
+{
+    [CmdletBinding(SupportsShouldProcess = $true)]
     param (
-        [Parameter(
-            Mandatory
-        )]
+        [Parameter(Mandatory = $true)]
         [string]
         $DscBuildOutputModules,
 
-        [io.FileInfo]
+        [Parameter()]
+        [System.IO.FileInfo]
         $PullServerWebConfig = "$env:SystemDrive\inetpub\wwwroot\PSDSCPullServer\web.config"
     )
-    Begin
+
+    begin
     {
-        if ( !(Test-Path $PullServerWebConfig) ) {
-            if ($PSBoundParameters['ErrorAction'] -eq 'SilentlyContinue') {
-                Write-Warning -Message "Could not find the Web.config of the pull Server at $PullServerWebConfig"
+        if (-not (Test-Path $PullServerWebConfig))
+        {
+            if ($PSBoundParameters['ErrorAction'] -eq 'SilentlyContinue')
+            {
+                Write-Warning -Message "Could not find the Web.config of the pull Server at '$PullServerWebConfig'."
             }
-            else {
-                Throw "Could not find the Web.config of the pull Server at $PullServerWebConfig"
+            else
+            {
+                throw "Could not find the Web.config of the pull Server at '$PullServerWebConfig'."
             }
             return
         }
-        else {
+        else
+        {
             $webConfigXml = [xml](Get-Content -Raw -Path $PullServerWebConfig)
             $configXElement = $webConfigXml.SelectNodes("//appSettings/add[@key = 'ConfigurationPath']")
-            $OutputFolderPath =  $configXElement.Value
+            $OutputFolderPath = $configXElement.Value
         }
     }
 
-    Process {
-        if ($OutputFolderPath) {
-            Write-Verbose 'Moving Processed Resource Modules from '
+    process
+    {
+        if ($OutputFolderPath)
+        {
+            Write-Verbose 'Moving Processed Resource Modules from'
             Write-Verbose "`t$DscBuildOutputModules to"
             Write-Verbose "`t$OutputFolderPath"
 
-            if ($pscmdlet.shouldprocess("copy $DscBuildOutputModules to $OutputFolderPath")) {
-                Get-ChildItem -Path $DscBuildOutputModules -Include @('*.zip','*.checksum') |
+            if ($PSCmdlet.ShouldProcess("copy '$DscBuildOutputModules' to '$OutputFolderPath'"))
+            {
+                Get-ChildItem -Path $DscBuildOutputModules -Include @('*.zip', '*.checksum') |
                     Copy-Item -Destination $OutputFolderPath -Force
             }
         }
     }
-    
 }

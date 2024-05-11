@@ -1,5 +1,6 @@
-function Get-DscCimInstanceReference {
-    param(
+function Get-DscCimInstanceReference
+{
+    param (
         [Parameter(Mandatory = $true)]
         [string]
         $ResourceName,
@@ -13,14 +14,17 @@ function Get-DscCimInstanceReference {
         $Data
     )
 
-    if ($Script:allDscResourcePropertiesTable) {
-        if ($allDscResourcePropertiesTable.ContainsKey("$($ResourceName)-$($ParameterName)")) {
+    if ($Script:allDscResourcePropertiesTable)
+    {
+        if ($allDscResourcePropertiesTable.ContainsKey("$($ResourceName)-$($ParameterName)"))
+        {
             $p = $allDscResourcePropertiesTable."$($ResourceName)-$($ParameterName)"
             $typeConstraint = $p.TypeConstraint -replace '\[\]', ''
             Get-DscSplattedResource -ResourceName $typeConstraint -Properties $Data -NoInvoke
         }
     }
-    else {
+    else
+    {
         Write-Host "No DSC Resource Properties metadata was found, cannot translate CimInstance parameters. Call 'Initialize-DscResourceMetaInfo' first is this is needed."
     }
 }

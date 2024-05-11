@@ -1,4 +1,5 @@
-function Get-DscResourceWmiClass {
+function Get-DscResourceWmiClass
+{
     <#
         .Synopsis
             Retrieves WMI classes from the DSC namespace.
@@ -10,16 +11,20 @@ function Get-DscResourceWmiClass {
             Get-DscResourceWmiClass -Class 'MSFT_UserResource'
     #>
     param (
-        #The WMI Class name search for.  Supports wildcards.
-        [parameter(ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        #The WMI Class name search for. Supports wildcards.
+        [parameter(ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [Alias('Name')]
         [string]
         $Class
     )
-    begin {
-        $DscNamespace = "root/Microsoft/Windows/DesiredStateConfiguration"
+
+    begin
+    {
+        $dscNamespace = 'root/Microsoft/Windows/DesiredStateConfiguration'
     }
-    process {
-        Get-wmiobject -Namespace $DscNamespace -list @psboundparameters
+
+    process
+    {
+        Get-WmiObject -Namespace $dscNamespace -List @PSBoundParameters
     }
 }

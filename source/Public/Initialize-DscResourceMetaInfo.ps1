@@ -42,7 +42,7 @@ function Initialize-DscResourceMetaInfo
     $script:allDscResourceProperties = foreach ($dscResource in $allDscResources)
     {
         $moduleInfo = $modulesWithDscResources |
-                Where-Object { $_.Name -EQ $dscResource.ModuleName -and $_.Version -eq $dscResource.Version }
+            Where-Object { $_.Name -EQ $dscResource.ModuleName -and $_.Version -eq $dscResource.Version }
 
         $cimProperties = if ($ReturnAllProperties)
         {
@@ -51,7 +51,7 @@ function Initialize-DscResourceMetaInfo
         else
         {
             Get-DscResourceProperty -ModuleInfo $moduleInfo -ResourceName $dscResource.Name |
-            Where-Object TypeConstraint -NotIn $standardCimTypes.CimType
+                Where-Object TypeConstraint -NotIn $standardCimTypes.CimType
         }
 
         foreach ($cimProperty in $cimProperties)

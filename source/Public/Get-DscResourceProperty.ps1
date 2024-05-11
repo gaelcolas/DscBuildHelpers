@@ -57,8 +57,8 @@ function Get-DscResourceProperty
             )
 
             $result = @{
-                ElementType         = $null
-                Type                = $null
+                ElementType = $null
+                Type        = $null
             }
 
             try
@@ -79,18 +79,18 @@ function Get-DscResourceProperty
         } $resourceProperty.TypeConstraint
 
         [PSCustomObject]@{
-            Name                = $resourceProperty.Name
-            ModuleName          = $ModuleInfo.Name
-            ResourceName        = $ResourceName
-            TypeConstraint      = $resourceProperty.TypeConstraint
-            Attributes          = $resourceProperty.Attributes
-            Values              = $resourceProperty.Values
-            ValueMap            = $resourceProperty.ValueMap
-            Mandatory           = $resourceProperty.Mandatory
-            IsKey               = $resourceProperty.IsKey
-            Range               = $resourceProperty.Range
-            ElementType         = $dscClassParameterInfo.ElementType
-            Type                = $dscClassParameterInfo.Type
+            Name           = $resourceProperty.Name
+            ModuleName     = $ModuleInfo.Name
+            ResourceName   = $ResourceName
+            TypeConstraint = $resourceProperty.TypeConstraint
+            Attributes     = $resourceProperty.Attributes
+            Values         = $resourceProperty.Values
+            ValueMap       = $resourceProperty.ValueMap
+            Mandatory      = $resourceProperty.Mandatory
+            IsKey          = $resourceProperty.IsKey
+            Range          = $resourceProperty.Range
+            ElementType    = $dscClassParameterInfo.ElementType
+            Type           = $dscClassParameterInfo.Type
         }
     }
 }
