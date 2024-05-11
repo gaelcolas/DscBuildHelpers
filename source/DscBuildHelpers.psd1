@@ -13,17 +13,17 @@
 
     PowerShellVersion = '5.0'
 
-    RequiredModules = @(
-        @{ ModuleName = 'xDscResourceDesigner'; ModuleVersion = '1.9.0.0'} #tested with 1.9.0.0
+    RequiredModules   = @(
+        @{ ModuleName = 'xDscResourceDesigner'; ModuleVersion = '1.9.0.0' } #tested with 1.9.0.0
     )
 
     FunctionsToExport = '*'
 
-    PrivateData = @{
+    PrivateData       = @{
 
         PSData = @{
 
-            Prerelease = ''
+            Prerelease   = ''
 
             # Tags applied to this module. These help with module discovery in online galleries.
             Tags         = @('DesiredStateConfiguration', 'DSC', 'BuildHelpers', 'DSCResource')
@@ -32,7 +32,7 @@
             #LicenseUri = 'https://github.com/gaelcolas/DscBuildHelpers/blob/main/LICENSE'
 
             # A URL to the main website for this project.
-            ProjectUri = 'https://github.com/gaelcolas/DscBuildHelpers'
+            ProjectUri   = 'https://github.com/gaelcolas/DscBuildHelpers'
 
             # A URL to an icon representing this module.
             IconUri      = 'https://dsccommunity.org/images/DSC_Logo_300p.png'

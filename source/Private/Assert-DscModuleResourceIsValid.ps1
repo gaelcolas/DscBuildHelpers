@@ -1,37 +1,37 @@
 function Assert-DscModuleResourceIsValid
 {
-    [cmdletbinding()]
+    [CmdletBinding()]
     param (
-        [parameter(ValueFromPipeline)]
+        [Parameter(ValueFromPipeline = $true)]
         [Microsoft.PowerShell.DesiredStateConfiguration.DscResourceInfo]
         $DscResources
     )
 
     begin
     {
-        Write-Verbose "Testing for valid resources."
-        $FailedDscResources = @()
+        Write-Verbose 'Testing for valid resources.'
+        $failedDscResources = @()
     }
 
     process
     {
-        foreach($DscResource in $DscResources) {
-            $FailedDscResources += Get-FailedDscResource -DscResource $DscResource
+        foreach ($DscResource in $DscResources)
+        {
+            $failedDscResources += Get-FailedDscResource -DscResource $DscResource
         }
     }
 
     end
     {
-        if ($FailedDscResources.Count -gt 0)
+        if ($failedDscResources.Count -gt 0)
         {
-            Write-Verbose "Found failed resources."
-            foreach ($resource in $FailedDscResources)
+            Write-Verbose 'Found failed resources.'
+            foreach ($resource in $failedDscResources)
             {
-
                 Write-Warning "`t`tFailed Resource - $($resource.Name) ($($resource.Version))"
             }
 
-            throw "One or more resources is invalid."
+            throw 'One or more resources is invalid.'
         }
     }
 }

@@ -1,29 +1,25 @@
-function Test-DscResourceFromModuleInFolderIsValid {
-    [cmdletbinding()]
+function Test-DscResourceFromModuleInFolderIsValid
+{
+    [CmdletBinding()]
     param (
-        [Parameter(
-            Mandatory
-        )]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [System.io.DirectoryInfo]
+        [System.IO.DirectoryInfo]
         $ModuleFolder,
-        
-        [Parameter(
-            Mandatory,
-            ValueFromPipelineByPropertyName,
-            ValueFromPipeline
-        )]
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ValueFromPipeline = $true)]
         [System.Management.Automation.PSModuleInfo[]]
         [AllowNull()]
         $Modules
     )
-    
-    Process {
-        Foreach ($module in $Modules) {
-            $Resources = Get-DscResourceFromModuleInFolder -ModuleFolder $ModuleFolder `
-                                                          -Modules $module
 
-            $Resources.Where{$_.ImplementedAs -eq 'PowerShell'} | Assert-DscModuleResourceIsValid
+    process
+    {
+        foreach ($module in $Modules)
+        {
+            $Resources = Get-DscResourceFromModuleInFolder -ModuleFolder $ModuleFolder -Modules $module
+
+            $Resources.Where{ $_.ImplementedAs -eq 'PowerShell' } | Assert-DscModuleResourceIsValid
         }
     }
 }

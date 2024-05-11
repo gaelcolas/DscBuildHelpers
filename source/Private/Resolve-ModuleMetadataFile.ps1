@@ -1,75 +1,79 @@
 
-function Resolve-ModuleMetadataFile {
-    [cmdletbinding(DefaultParameterSetName = 'ByDirectoryInfo')]
+function Resolve-ModuleMetadataFile
+{
+    [CmdletBinding(DefaultParameterSetName = 'ByDirectoryInfo')]
     param (
-        [parameter(
-            ParameterSetName = 'ByPath',
-            Mandatory,
-            ValueFromPipelineByPropertyName
-        )]
+        [Parameter(ParameterSetName = 'ByPath', Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [string]
         $Path,
-        [parameter(
-            ParameterSetName = 'ByDirectoryInfo',
-            Mandatory,
-            ValueFromPipeline
-        )]
+
+        [Parameter(ParameterSetName = 'ByDirectoryInfo', Mandatory = $true, ValueFromPipeline = $true)]
         [System.IO.DirectoryInfo]
         $InputObject
-
     )
 
-    process {
-        $MetadataFileFound = $true
-        $MetadataFilePath = ''
-        Write-Verbose "Using Parameter set - $($PSCmdlet.ParameterSetName)"
-        switch ($PSCmdlet.ParameterSetName) {
-            'ByPath' {
-                Write-Verbose "Testing Path - $path"
-                if (Test-Path $Path) {
+    process
+    {
+        $metadataFileFound = $true
+        $metadataFilePath = ''
+        Write-Verbose "Using Parameter set - $($PSCmdlet.ParameterSetName)."
+        switch ($PSCmdlet.ParameterSetName)
+        {
+            'ByPath'
+            {
+                Write-Verbose "Testing Path - $path."
+                if (Test-Path -Path $Path)
+                {
                     Write-Verbose "`tFound $path."
-                    $item = (Get-Item $Path)
-                    if ($item.psiscontainer) {
+                    $item = (Get-Item -Path $Path)
+                    if ($item.PSIsContainer)
+                    {
                         Write-Verbose "`t`tIt is a folder."
-                        $ModuleName = Split-Path $Path -Leaf
-                        $MetadataFilePath = Join-Path $Path "$ModuleName.psd1"
-                        $MetadataFileFound = Test-Path $MetadataFilePath
+                        $moduleName = Split-Path $Path -Leaf
+                        $metadataFilePath = Join-Path -Path $Path -ChildPath "$moduleName.psd1"
+                        $metadataFileFound = Test-Path -Path $metadataFilePath
                     }
-                    else {
-                        if ($item.Extension -like '.psd1') {
+                    else
+                    {
+                        if ($item.Extension -like '.psd1')
+                        {
                             Write-Verbose "`t`tIt is a module metadata file."
-                            $MetadataFilePath = $item.FullName
-                            $MetadataFileFound = $true
+                            $metadataFilePath = $item.FullName
+                            $metadataFileFound = $true
                         }
-                        else {
-                            $ModulePath = Split-Path $Path
-                            Write-Verbose "`t`tSearching for module metadata folder in $ModulePath"
-                            $ModuleName = Split-Path $ModulePath -Leaf
-                            Write-Verbose "`t`tModule name is $ModuleName."
-                            $MetadataFilePath = Join-Path $ModulePath "$ModuleName.psd1"
-                            Write-Verbose "`t`tChecking for $MetadataFilePath."
-                            $MetadataFileFound = Test-Path $MetadataFilePath
+                        else
+                        {
+                            $modulePath = Split-Path -Path $Path
+                            Write-Verbose "`t`tSearching for module metadata folder in '$ModulePath'."
+                            $moduleName = Split-Path $modulePath -Leaf
+                            Write-Verbose "`t`tModule name is '$moduleName'."
+                            $metadataFilePath = Join-Path -Path $ModulePath -ChildPath "$ModuleName.psd1"
+                            Write-Verbose "`t`tChecking for '$metadataFilePath'."
+                            $metadataFileFound = Test-Path -Path $metadataFilePath
                         }
                     }
                 }
-                else {
-                    $MetadataFileFound = $false
+                else
+                {
+                    $metadataFileFound = $false
                 }
             }
-            'ByDirectoryInfo' {
-                $ModuleName = $InputObject.Name
-                $MetadataFilePath = Join-Path $InputObject.FullName "$ModuleName.psd1"
-                $MetadataFileFound = Test-Path $MetadataFilePath
+            'ByDirectoryInfo'
+            {
+                $moduleName = $InputObject.Name
+                $metadataFilePath = Join-Path -Path $InputObject.FullName -ChildPath "$moduleName.psd1"
+                $metadataFileFound = Test-Path -Path $metadataFilePath
             }
-
         }
 
-        if ($MetadataFileFound -and (-not [string]::IsNullOrEmpty($MetadataFilePath))) {
-            Write-Verbose "Found a module metadata file at $MetadataFilePath."
-            Convert-path $MetadataFilePath
+        if ($metadataFileFound -and (-not [string]::IsNullOrEmpty($metadataFilePath)))
+        {
+            Write-Verbose "Found a module metadata file at '$metadataFilePath'."
+            Convert-Path -Path $metadataFilePath
         }
-        else {
-            Write-Error "Failed to find a module metadata file at $MetadataFilePath."
+        else
+        {
+            Write-Error "Failed to find a module metadata file at '$metadataFilePath'."
         }
     }
 }

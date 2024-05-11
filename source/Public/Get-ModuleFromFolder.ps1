@@ -14,18 +14,18 @@
         $ExcludedModules
     )
 
-    Begin
+    begin
     {
         $allModulesInFolder = @()
     }
 
-    Process
+    process
     {
-        foreach ($Folder in $ModuleFolder)
+        foreach ($folder in $ModuleFolder)
         {
-            Write-Debug -Message "Replacing Module path with $Folder"
+            Write-Debug -Message "Replacing Module path with $folder"
             $oldPSModulePath = $env:PSModulePath
-            $env:PSModulePath = $Folder
+            $env:PSModulePath = $folder
             Write-Debug -Message 'Discovering modules from folder'
             $allModulesInFolder += Get-Module -Refresh -ListAvailable
             Write-Debug -Message 'Reverting PSModulePath'

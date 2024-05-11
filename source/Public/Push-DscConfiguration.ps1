@@ -1,82 +1,61 @@
-function Push-DscConfiguration {
-    [CmdletBinding(
-        SupportsShouldProcess,
-        ConfirmImpact='High'
-    )]
-    [Alias()]
+function Push-DscConfiguration
+{
+    [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     [OutputType([void])]
     Param (
-        # Param1 help description
-        [Parameter(Mandatory,
-                    Position=0
-                   ,ValueFromPipelineByPropertyName
-        )]
+        [Parameter(Mandatory = $true, Position = 0, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
-        [System.Management.Automation.Runspaces.PSSession] 
+        [System.Management.Automation.Runspaces.PSSession]
         $Session,
-        
-        # Param2 help description
+
         [Parameter()]
-        [Alias('MOF','Path')]
+        [Alias('MOF', 'Path')]
         [System.IO.FileInfo]
         $ConfigurationDocument,
-        
-        # Param3 help description
+
         [Parameter()]
-        [psmoduleinfo[]]
+        [System.Management.Automation.PSModuleInfo[]]
         $WithModule,
 
-        [Parameter(
-            ,Position = 1
-            ,ValueFromPipelineByPropertyName
-            ,ValueFromRemainingArguments
-        )]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ValueFromRemainingArguments = $true, Position = 1)]
         [Alias('DscBuildOutputModules')]
         $StagingFolderPath = "$Env:TMP\DSC\BuildOutput\modules\",
 
-        [Parameter(
-            ,Position = 3
-            ,ValueFromPipelineByPropertyName
-            ,ValueFromRemainingArguments
-        )]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ValueFromRemainingArguments = $true, Position = 3)]
         $RemoteStagingPath = '$Env:TMP\DSC\modules\',
 
-        [Parameter(
-            ,Position = 4
-            ,ValueFromPipelineByPropertyName
-            ,ValueFromRemainingArguments
-        )]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ValueFromRemainingArguments = $true, Position = 4)]
         [switch]
         $Force
     )
-    
-   
-    process {
-        if ($pscmdlet.ShouldProcess($Session.ComputerName, "Applying MOF $ConfigurationDocument")) {
-            if ($WithModule) {
+
+    process
+    {
+        if ($PSCmdlet.ShouldProcess($Session.ComputerName, "Applying MOF '$ConfigurationDocument'"))
+        {
+            if ($WithModule)
+            {
                 Push-DscModuleToNode -Module $WithModule -StagingFolderPath $StagingFolderPath -RemoteStagingPath $RemoteStagingPath -Session $Session
             }
 
-            Write-Verbose "Removing previously pushed configuration documents"
-            $ResolvedRemoteStagingPath = Invoke-Command -Session $Session -ScriptBlock {
-                $ResolvedStagingPath = $ExecutionContext.InvokeCommand.ExpandString($Using:RemoteStagingPath)
-                $null = Get-item "$ResolvedStagingPath\*.mof" | Remove-Item -force -ErrorAction SilentlyContinue
-                if (!(Test-Path $ResolvedStagingPath)) {
-                    mkdir -Force $ResolvedStagingPath -ErrorAction Stop
+            Write-Verbose 'Removing previously pushed configuration documents'
+            $resolvedRemoteStagingPath = Invoke-Command -Session $Session -ScriptBlock {
+                $resolvedStagingPath = $ExecutionContext.InvokeCommand.ExpandString($Using:RemoteStagingPath)
+                $null = Get-Item "$resolvedStagingPath\*.mof" | Remove-Item -Force -ErrorAction SilentlyContinue
+                if (-not (Test-Path $resolvedStagingPath))
+                {
+                    mkdir -Force $resolvedStagingPath -ErrorAction Stop
                 }
-                Write-Output $ResolvedStagingPath
+                $resolvedStagingPath
             } -ErrorAction Stop
 
-            $RemoteConfigDocumentPath = [io.path]::Combine(
-                $ResolvedRemoteStagingPath,
-                'localhost.mof'
-            )
+            $remoteConfigDocumentPath = [System.IO.Path]::Combine($ResolvedRemoteStagingPath, 'localhost.mof')
 
-            Copy-Item -ToSession $Session -Path $ConfigurationDocument -Destination $RemoteConfigDocumentPath -Force -ErrorAction Stop
+            Copy-Item -ToSession $Session -Path $ConfigurationDocument -Destination $remoteConfigDocumentPath -Force -ErrorAction Stop
 
-            Write-Verbose "Attempting to apply $RemoteConfigDocumentPath on $($session.ComputerName)"
-            Invoke-Command -Session $Session -scriptblock {
-                Start-DscConfiguration -Wait -Force -Path $Using:ResolvedRemoteStagingPath -Verbose -ErrorAction Stop
+            Write-Verbose "Attempting to apply '$remoteConfigDocumentPath' on '$($session.ComputerName)'"
+            Invoke-Command -Session $Session -ScriptBlock {
+                Start-DscConfiguration -Wait -Force -Path $Using:resolvedRemoteStagingPath -Verbose -ErrorAction Stop
             }
         }
     }
