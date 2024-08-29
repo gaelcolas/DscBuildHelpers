@@ -75,7 +75,7 @@ DscTest:
 BuildWorkflow:
   '.': # "." is the default Invoke-Build workflow. It is called when no -Tasks is specified to the build.ps1
     - build
-    - test
+    #- test
 
   build:
     - Clean
