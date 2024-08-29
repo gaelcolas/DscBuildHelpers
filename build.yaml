@@ -103,6 +103,12 @@ BuildWorkflow:
 ModuleBuildTasks:
   Sampler:
     - '*.build.Sampler.ib.tasks'
+  Sampler.GitHubTasks:
+    - '*.ib.tasks'
+  DscResource.DocGenerator:
+    - 'Task.*'
+  DscResource.Test:
+    - 'Task.*'
 
 TaskHeader: |
   param($Path)
@@ -121,3 +127,10 @@ GitHubConfig:
   GitHubConfigUserName: gaelcolas
   GitHubConfigUserEmail: psgallery@synedgy.com
   UpdateChangelogOnPrerelease: false
+
+####################################################
+#             DscResource.DocGenerator             #
+####################################################
+DscResource.DocGenerator:
+  Generate_Conceptual_Help:
+    BuiltModuleSubdirectory: Module
