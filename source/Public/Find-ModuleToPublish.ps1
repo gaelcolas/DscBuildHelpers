@@ -19,7 +19,7 @@ function Find-ModuleToPublish
 
     $modulesAvailable = Get-ModuleFromFolder -ModuleFolder $DscBuildSourceResources -ExcludedModules $ExcludedModules
 
-    Foreach ($module in $modulesAvailable)
+    foreach ($module in $modulesAvailable)
     {
         $publishTargetZip = [System.IO.Path]::Combine(
             $DscBuildOutputModules,

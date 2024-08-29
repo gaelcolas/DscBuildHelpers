@@ -10,6 +10,7 @@
 #>
 function Remove-DscResourceWmiClass
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWMICmdlet', '', Justification = 'Not possible via CIM')]
     [CmdletBinding()]
     param (
         #The WMI Class name to remove.  Supports wildcards.

@@ -19,6 +19,8 @@
 
     FunctionsToExport = '*'
 
+    AliasesToExport = ''
+
     PrivateData       = @{
 
         PSData = @{

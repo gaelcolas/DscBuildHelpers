@@ -10,9 +10,11 @@ function Get-DscResourceWmiClass
         .Example
             Get-DscResourceWmiClass -Class 'MSFT_UserResource'
     #>
+    [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWMICmdlet', '', Justification = 'Not possible via CIM')]
     param (
         #The WMI Class name search for. Supports wildcards.
-        [parameter(ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
+        [Parameter(ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [Alias('Name')]
         [string]
         $Class

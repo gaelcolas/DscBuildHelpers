@@ -1,5 +1,6 @@
 function Get-DscCimInstanceReference
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '', Justification='For debugging purposes')]
     param (
         [Parameter(Mandatory = $true)]
         [string]

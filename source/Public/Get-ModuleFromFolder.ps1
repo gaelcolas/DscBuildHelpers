@@ -1,4 +1,4 @@
-﻿function Get-ModuleFromFolder
+function Get-ModuleFromFolder
 {
     [CmdletBinding()]
     [OutputType([System.Management.Automation.PSModuleInfo[]])]
@@ -33,7 +33,7 @@
         }
     }
 
-    End
+    end
     {
 
         $allModulesInFolder | Where-Object {
