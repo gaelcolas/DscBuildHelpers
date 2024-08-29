@@ -2,15 +2,15 @@ function Get-DscResourceProperty
 {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory, ParameterSetName = 'ModuleInfo')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'ModuleInfo')]
         [System.Management.Automation.PSModuleInfo]
         $ModuleInfo,
 
-        [Parameter(Mandatory, ParameterSetName = 'ModuleName')]
+        [Parameter(Mandatory = $true, ParameterSetName = 'ModuleName')]
         [string]
         $ModuleName,
 
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory = $true)]
         [string]
         $ResourceName
     )
@@ -34,7 +34,7 @@ function Get-DscResourceProperty
     $foundCimSchema = [Microsoft.PowerShell.DesiredStateConfiguration.Internal.DscClassCache]::ImportCimKeywordsFromModule($ModuleInfo, $ResourceName, [ref] $SchemaFilePath, $functionsToDefine, $keywordErrors)
     if ($foundCimSchema)
     {
-        $foundScriptSchema = [Microsoft.PowerShell.DesiredStateConfiguration.Internal.DscClassCache]::ImportScriptKeywordsFromModule($ModuleInfo, $ResourceName, [ref] $SchemaFilePath, $functionsToDefine)
+        [void][Microsoft.PowerShell.DesiredStateConfiguration.Internal.DscClassCache]::ImportScriptKeywordsFromModule($ModuleInfo, $ResourceName, [ref] $SchemaFilePath, $functionsToDefine)
     }
     else
     {
@@ -46,7 +46,6 @@ function Get-DscResourceProperty
 
     foreach ($key in $resourceProperties.Keys)
     {
-
         $resourceProperty = $resourceProperties.$key
 
         $dscClassParameterInfo = & $ModuleInfo {
@@ -63,7 +62,7 @@ function Get-DscResourceProperty
 
             try
             {
-                $result.Type = Invoke-Expression "[$($TypeName)]"
+                $result.Type = Invoke-Command -ScriptBlock ([scriptblock]::Create("[$($TypeName)]"))
 
                 if ($result.Type.IsArray)
                 {
@@ -72,6 +71,7 @@ function Get-DscResourceProperty
             }
             catch
             {
+                Write-Verbose 'The type '$TypeName" could not be resolved."
             }
 
             return $result

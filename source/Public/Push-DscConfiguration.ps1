@@ -2,7 +2,7 @@ function Push-DscConfiguration
 {
     [CmdletBinding(SupportsShouldProcess = $true, ConfirmImpact = 'High')]
     [OutputType([void])]
-    Param (
+    param (
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.Runspaces.PSSession]

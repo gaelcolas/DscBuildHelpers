@@ -2,14 +2,14 @@ function Compress-DscResourceModule
 {
     [CmdletBinding(SupportsShouldProcess = $true)]
     param (
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [String]
         $DscBuildOutputModules,
 
-        [Parameter(Mandatory, ValueFromPipeline)]
+        [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
         [AllowNull()]
-        [psmoduleinfo[]]
+        [PSModuleInfo[]]
         $Modules
     )
 

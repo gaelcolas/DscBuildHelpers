@@ -11,6 +11,7 @@ function Get-RequiredModulesFromMOF
         required modules.
     #>
     [CmdletBinding()]
+    [OutputType([hashtable])]
     param (
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [System.String]
@@ -31,7 +32,6 @@ function Get-RequiredModulesFromMOF
                 ## We have a new instance so write the existing one
                 if (($null -ne $moduleName) -and ($null -ne $moduleVersion))
                 {
-
                     $modules[$moduleName] = $moduleVersion
                     $moduleName = $null
                     $moduleVersion = $null

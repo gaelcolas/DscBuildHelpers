@@ -1,7 +1,7 @@
 function Initialize-DscResourceMetaInfo
 {
     param (
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory = $true)]
         [string]
         $ModulePath,
 

@@ -32,7 +32,7 @@ function Push-DscModuleToNode
 {
     [CmdletBinding()]
     [OutputType([void])]
-    Param (
+    param (
         # Param1 help description
         [Parameter(Mandatory = $true, Position = 0, ValueFromPipelineByPropertyName = $true, ValueFromRemainingArguments = $true)]
         [Alias('ModuleInfo')]
@@ -106,14 +106,24 @@ function Push-DscModuleToNode
         foreach ($module in $missingModules)
         {
             $fileName = "$($StagingFolderPath)/$($module.Name)_$($module.Version).zip"
-            if ($Force -or -not (Invoke-Command -Session $Session -ScriptBlock {
-                        param ($FileName)
-                        Test-Path -Path $FileName
-                    } -ArgumentList $fileName))
+            $testPathResult = Invoke-Command -Session $Session -ScriptBlock {
+                param (
+                    [Parameter(Mandatory = $true)]
+                    [string]
+                    $FileName
+                )
+                Test-Path -Path $FileName
+            } -ArgumentList $fileName
+
+            if ($Force -or -not ($testPathResult))
             {
                 Write-Verbose "Copying '$fileName*' to '$ResolvedRemoteStagingPath'."
                 Invoke-Command -Session $Session -ScriptBlock {
-                    param ($PathToZips)
+                    param (
+                        [Parameter(Mandatory = $true)]
+                        [string]
+                        $PathToZips
+                    )
                     if (-not (Test-Path -Path $PathToZips))
                     {
                         mkdir -Path $PathToZips -Force
@@ -137,7 +147,12 @@ function Push-DscModuleToNode
         # Extract missing modules on remote node to PSModulePath
         Write-Verbose "Expanding '$resolvedRemoteStagingPath/*.zip' to '$env:CommonProgramW6432\WindowsPowerShell\Modules\$($Module.Name)\$($module.version)'."
         Invoke-Command -Session $Session -ScriptBlock {
-            param ($MissingModules, $PathToZips)
+            param (
+                [Parameter()]
+                $MissingModules,
+                [Parameter()]
+                $PathToZips
+            )
             foreach ($module in $MissingModules)
             {
                 $fileName = "$($module.Name)_$($module.version).zip"

@@ -1,7 +1,8 @@
 function Get-DscSplattedResource
 {
     [CmdletBinding()]
-    Param (
+    [OutputType([scriptblock])]
+    param (
         [Parameter(Mandatory = $true)]
         [String]
         $ResourceName,
@@ -45,7 +46,6 @@ function Get-DscSplattedResource
 
     foreach ($PropertyName in $Properties.Keys)
     {
-
         $cimType = $allDscResourcePropertiesTable."$ResourceName-$PropertyName"
         if ($cimType)
         {

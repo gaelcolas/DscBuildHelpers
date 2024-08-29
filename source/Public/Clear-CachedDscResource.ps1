@@ -1,5 +1,6 @@
 function Clear-CachedDscResource
 {
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWMICmdlet', '', Justification = 'Not possible via CIM')]
     [CmdletBinding(SupportsShouldProcess = $true)]
     param ()
 

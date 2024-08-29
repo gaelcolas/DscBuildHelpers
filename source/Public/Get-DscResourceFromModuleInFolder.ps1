@@ -1,6 +1,7 @@
 function Get-DscResourceFromModuleInFolder
 {
-    [cmdletbinding()]
+    [CmdletBinding()]
+    [OutputType([object[]])]
     param (
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
@@ -41,7 +42,6 @@ function Get-DscResourceFromModuleInFolder
 
             foreach ($module in $Modules)
             {
-
                 if (-not (Compare-Object -ReferenceObject $dscResource.Module -DifferenceObject $Module -Property ModuleType, Version, Name))
                 {
                     Write-Debug "Resource $($dscResource.Name) matches one of the supplied Modules."
