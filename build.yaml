@@ -49,10 +49,11 @@ DscTest:
     Configuration:
       Filter:
         ExcludeTag:
-          - "Common Tests - New Error-Level Script Analyzer Rules"
-          - "Common Tests - Validate Localization"
-          - "Common Tests - Validate Example Files To Be Published"
-          - "Common Tests - Validate Example Files"
+          - Common Tests - New Error-Level Script Analyzer Rules
+          - Common Tests - Validate Localization
+          - Common Tests - Validate Example Files To Be Published
+          - Common Tests - Validate Example Files
+          - RequiredPSSA
       Output:
         Verbosity: Detailed
         CIFormat: Auto
@@ -93,7 +94,7 @@ BuildWorkflow:
   test:
     - Pester_Tests_Stop_On_Fail
     - Pester_If_Code_Coverage_Under_Threshold
-    #- hqrmtest
+    - hqrmtest
 
   publish:
     - publish_module_to_gallery
