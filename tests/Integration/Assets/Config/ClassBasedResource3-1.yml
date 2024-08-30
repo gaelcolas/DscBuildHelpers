@@ -1,0 +1,22 @@
+Key: 3k11
+Object1:
+  String1: 31object1String1
+  Bool1: True
+Object1Group:
+  - String1: 31Object1ObjectGroup1Item1String1
+    Bool1: true
+  - String1: 31Object1ObjectGroup1Item2String1
+    Bool1: true
+Object2:
+  String1: 31Object2String1
+  Object1:
+    String1: 31Object2Object1String1
+    Bool1: true
+  Object1Group:
+    - String1: 31Object2Object1Group1Item1String1
+      Bool1: true
+    - String1: 31Object2Object1Group1Item2String1
+      Bool1: true
+  Object2:
+    String1: 31Object2Object2String1
+    Bool1: true
