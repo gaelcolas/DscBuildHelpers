@@ -1,0 +1,15 @@
+[ClassVersion("1.0.0.0"), FriendlyName("MofBasedResource2")]
+class MofBasedResource2 : OMI_BaseResource
+{
+    [Key, Description("")] String Key;
+    [Write, Description(""), EmbeddedInstance("MofCustomObject1")] String Object1;
+    [Write, Description(""), EmbeddedInstance("MofCustomObject1")] String Object1Group[];
+    [Write, Description(""), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+};
+
+[ClassVersion("1.0.0")]
+class MofCustomObject1
+{
+    [Write, Description("")] String String1;
+    [Write, Description("")] Boolean Bool1;
+};
