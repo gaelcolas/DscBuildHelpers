@@ -1,0 +1,10 @@
+[ClassVersion("1.0.0.0"), FriendlyName("MofBasedResource1")]
+class MofBasedResource1 : OMI_BaseResource
+{
+    [Key, Description("")] String Key1;
+    [Key, Description("")] String Key2;
+    [Write, Description("")] String String1;
+    [Write, Description("")] String Strings1[];
+    [Write, Description("")] Boolean Bool1;
+    [Write, Description(""), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] string Ensure;
+};
