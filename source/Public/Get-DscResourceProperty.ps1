@@ -71,7 +71,7 @@ function Get-DscResourceProperty
             }
             catch
             {
-                Write-Verbose 'The type '$TypeName" could not be resolved."
+                Write-Verbose "The type '$TypeName' could not be resolved."
             }
 
             return $result

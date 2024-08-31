@@ -1,0 +1,45 @@
+[ClassVersion("1.0.0.0"), FriendlyName("MofBasedResource3")]
+class MofBasedResource3 : OMI_BaseResource
+{
+    [Key, Description("")] String Key;
+    [Write, Description(""), EmbeddedInstance("MofCustomObject1")] String Object1;
+    [Write, Description(""), EmbeddedInstance("MofCustomObject1")] String Object1Group[];
+    [Write, Description(""), EmbeddedInstance("MofCustomObject2")] String Object2;
+    [Write, Description(""), ValueMap{"Present","Absent"}, Values{"Present","Absent"}] String Ensure;
+};
+
+[ClassVersion("1.0.0")]
+class MofCustomObject1
+{
+    [Write, Description("")] String String1;
+    [Write, Description("")] Boolean Bool1;
+};
+
+[ClassVersion("1.0.0")]
+class MofCustomObject1Group
+{
+    [Write, Description(""), EmbeddedInstance("MofCustomObject1")] String Object1Group[];
+};
+
+[ClassVersion("1.0.0")]
+class MofCustomObject2
+{
+    [Write, Description("")] String String1;
+    [Write, Description(""), EmbeddedInstance("MofCustomObject21")] String Object1;
+    [Write, Description(""), EmbeddedInstance("MofCustomObject21")] String Object1Group[];
+    [Write, Description(""), EmbeddedInstance("MofCustomObject22")] String Object2;
+};
+
+[ClassVersion("1.0.0")]
+class MofCustomObject21
+{
+    [Write, Description("")] String String1;
+    [Write, Description("")] Boolean Bool1;
+};
+
+[ClassVersion("1.0.0")]
+class MofCustomObject22
+{
+    [Write, Description("")] String String1;
+    [Write, Description("")] Boolean Bool1;
+};

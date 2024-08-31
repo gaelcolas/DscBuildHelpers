@@ -1,0 +1,9 @@
+Key: 2k2
+Object1:
+  String1: 22Object1String1
+  Bool1: true
+Object1Group:
+  - String1: 22Object1Group1Item1String1
+    Bool1: true
+  - String1: 22Object1Group1Item2String1
+    Bool1: true

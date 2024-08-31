@@ -1,0 +1,7 @@
+Key1: 1k11
+Key2: 1k12
+String1: 1string1
+Strings1:
+  - s11
+  - s12
+Bool1: true

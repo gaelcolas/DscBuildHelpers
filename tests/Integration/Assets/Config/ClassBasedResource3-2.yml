@@ -1,0 +1,22 @@
+Key: 3k12
+Object1:
+  String1: 2object1String1
+  Bool1: True
+Object1Group:
+  - String1: 2object1ObjectGroup1String1
+    Bool1: true
+  - String1: 2object1ObjectGroup1String2
+    Bool1: true
+Object2:
+  String1: 2object2String1
+  Object1:
+    String1: 2object2Object1String1
+    Bool1: true
+  Object1Group:
+    - String1: 2object2Object1Group1String11
+      Bool1: true
+    - String1: 2object2Object1Group1String12
+      Bool1: true
+  Object2:
+    String1: 2object2Object2String1
+    Bool1: true
