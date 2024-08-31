@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Aligned 'build.yml' with one from other related projects.
 - Added dummy test.
 - Made code HQRM compliant.
+- Added Pester tests for 'Get-DscSplattedResource'.
 
 ## [0.2.2] - 2024-04-03
 
