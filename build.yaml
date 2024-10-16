@@ -92,7 +92,7 @@ BuildWorkflow:
     - Invoke_HQRM_Tests_Stop_On_Fail
 
   test:
-    - TestPowerShell7
+    - FixPSDesiredStateConfigurationFor5
     - Pester_Tests_Stop_On_Fail
     - Pester_If_Code_Coverage_Under_Threshold
 
