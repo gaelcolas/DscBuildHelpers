@@ -87,7 +87,6 @@ BuildWorkflow:
 
   pack:
     - build
-    - package_module_nupkg
 
   hqrmtest:
     - Invoke_HQRM_Tests_Stop_On_Fail
