@@ -1,5 +1,6 @@
 BeforeDiscovery {
 
+    <#
     $dscResources = Get-DscResource -Name MofBased*, ClassBased* -ErrorAction SilentlyContinue
     $here = $PSScriptRoot
 
@@ -40,6 +41,7 @@ BeforeDiscovery {
         FilteredDscResources = $DscResources | Where-Object Name -NotIn $skippedDscResources
         TestCaseCount        = ($testCases | Where-Object Skip -eq $false).Count
     }
+    #>
 }
 
 <#
