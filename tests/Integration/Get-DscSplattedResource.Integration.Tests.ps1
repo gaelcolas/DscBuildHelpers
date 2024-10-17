@@ -1,6 +1,5 @@
 BeforeDiscovery {
 
-    <#
     $dscResources = Get-DscResource -Name MofBased*, ClassBased* -ErrorAction SilentlyContinue
     $here = $PSScriptRoot
 
@@ -16,6 +15,7 @@ BeforeDiscovery {
     Initialize-DscResourceMetaInfo -ModulePath $RequiredModulesDirectory
     Write-Host 'Done'
 
+    <#
     $global:configurationData = @{
         AllNodes = [array]$allNodes
         Datum    = $Datum
