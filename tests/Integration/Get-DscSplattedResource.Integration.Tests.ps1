@@ -81,6 +81,8 @@ configuration TestConfig {
         $dscConfiguration = $dscConfiguration.Replace('<ConfigPath>', $configPath)
 
         $data = $configurationData.Datum.Config.$configPath
+        Write-Host "Content of data:" -ForegroundColor Magenta
+        $data | Out-String | Write-Host -ForegroundColor Magenta
         Invoke-Expression -Command $dscConfiguration
 
         {
