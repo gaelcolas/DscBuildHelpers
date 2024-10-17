@@ -8,6 +8,8 @@ BeforeDiscovery {
     Import-Module -Name datum
 
     $datum = New-DatumStructure -DefinitionFile $here\Assets\Datum.yml
+    $datum = New-DatumStructure -DefinitionFile $here\Assets\Datum.yml
+    $datum = New-DatumStructure -DefinitionFile $here\Assets\Datum.yml
     Write-Host "Found $($datum.Config.ToHashTable().Count) tests in configuration data." -ForegroundColor Magenta
     $allNodes = Get-Content -Path $here\Assets\AllNodes.yml -Raw | ConvertFrom-Yaml
 
