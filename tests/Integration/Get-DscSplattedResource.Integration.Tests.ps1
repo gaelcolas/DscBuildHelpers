@@ -10,14 +10,13 @@ BeforeDiscovery {
     $datum = New-DatumStructure -DefinitionFile $here\Assets\Datum.yml -Verbose #-Debug
     Write-Host 'Datum Content:' -ForegroundColor Magenta
     $datum | Out-String | Write-Host -ForegroundColor Magenta
-    #Write-Host "Found $($datum.Config.ToHashTable().Count) tests in configuration data." -ForegroundColor Magenta
+    Write-Host "Found $($datum.Config.ToHashTable().Count) tests in configuration data." -ForegroundColor Magenta
     $allNodes = Get-Content -Path $here\Assets\AllNodes.yml -Raw | ConvertFrom-Yaml
 
-    #Write-Host 'Reading DSC Resource metadata for supporting CIM based DSC parameters...'
-    #Initialize-DscResourceMetaInfo -ModulePath $RequiredModulesDirectory
-    #Write-Host 'Done'
+    Write-Host 'Reading DSC Resource metadata for supporting CIM based DSC parameters...'
+    Initialize-DscResourceMetaInfo -ModulePath $RequiredModulesDirectory
+    Write-Host 'Done'
 
-    <#
     $global:configurationData = @{
         AllNodes = [array]$allNodes
         Datum    = $Datum
@@ -46,7 +45,6 @@ BeforeDiscovery {
     #>
 }
 
-<#
 Describe 'DSC Composite Resources compile' -Tags FunctionalQuality {
 
     It "'<DscResourceName>' compiles" -TestCases $testCases {
@@ -116,7 +114,6 @@ Describe 'Final tests' -Tags FunctionalQuality {
     }
 
 }
-#>
 
 Describe 'Dummy Test' {
 
