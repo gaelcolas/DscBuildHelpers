@@ -7,10 +7,10 @@ BeforeDiscovery {
 
     Import-Module -Name datum
 
-    $datum = New-DatumStructure -DefinitionFile $here\Assets\Datum.yml
-    $datum = New-DatumStructure -DefinitionFile $here\Assets\Datum.yml
-    $datum = New-DatumStructure -DefinitionFile $here\Assets\Datum.yml
-    Write-Host "Found $($datum.Config.ToHashTable().Count) tests in configuration data." -ForegroundColor Magenta
+    $datum = New-DatumStructure -DefinitionFile $here\Assets\Datum.yml -Verbose -Debug
+    Write-Host 'Datum Content:' -ForegroundColor Magenta
+    $datum | Out-String | Write-Host -ForegroundColor Magenta
+    #Write-Host "Found $($datum.Config.ToHashTable().Count) tests in configuration data." -ForegroundColor Magenta
     $allNodes = Get-Content -Path $here\Assets\AllNodes.yml -Raw | ConvertFrom-Yaml
 
     #Write-Host 'Reading DSC Resource metadata for supporting CIM based DSC parameters...'
