@@ -20,15 +20,16 @@ BeforeDiscovery {
     }
 
     [hashtable[]]$testCases = @()
+    $configFiles = $datum.Config | Get-Member -MemberType ScriptProperty | Select-Object -ExpandProperty Name
     foreach ($dscResource in $dscResources)
     {
-        foreach ($kvp in $datum.Config.ToOrderedHashTable().GetEnumerator() | Where-Object { $_.Name -like "$($dscResource.Name)*" })
+        foreach ($configFile in $configFiles | Where-Object { $_ -like "$($dscResource.Name)*" })
         {
             $testCases += @{
                 DscResourceName = $dscResource.Name
                 DscModuleName   = $dscResource.ModuleName
                 Skip            = ($dscResource.Name -in $skippedDscResources)
-                ConfigPath      = $kvp.Name
+                ConfigPath      = $configFile
             }
         }
     }
