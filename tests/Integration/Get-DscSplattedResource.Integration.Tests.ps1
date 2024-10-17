@@ -7,10 +7,7 @@ BeforeDiscovery {
 
     Import-Module -Name datum
 
-    $datum = New-DatumStructure -DefinitionFile $here\Assets\Datum.yml -Verbose #-Debug
-    Write-Host 'Datum Content:' -ForegroundColor Magenta
-    $datum | Out-String | Write-Host -ForegroundColor Magenta
-    Write-Host "Found $($datum.Config.ToHashTable().Count) tests in configuration data." -ForegroundColor Magenta
+    $datum = New-DatumStructure -DefinitionFile $here\Assets\Datum.yml
     $allNodes = Get-Content -Path $here\Assets\AllNodes.yml -Raw | ConvertFrom-Yaml
 
     Write-Host 'Reading DSC Resource metadata for supporting CIM based DSC parameters...'
@@ -25,7 +22,7 @@ BeforeDiscovery {
     [hashtable[]]$testCases = @()
     foreach ($dscResource in $dscResources)
     {
-        foreach ($kvp in $datum.Config.ToHashTable().GetEnumerator() | Where-Object { $_.Name -like "$($dscResource.Name)*" })
+        foreach ($kvp in $datum.Config.ToOrderedHashTable().GetEnumerator() | Where-Object { $_.Name -like "$($dscResource.Name)*" })
         {
             $testCases += @{
                 DscResourceName = $dscResource.Name
@@ -42,7 +39,6 @@ BeforeDiscovery {
         FilteredDscResources = $DscResources | Where-Object Name -NotIn $skippedDscResources
         TestCaseCount        = ($testCases | Where-Object Skip -eq $false).Count
     }
-    #>
 }
 
 Describe 'DSC Composite Resources compile' -Tags FunctionalQuality {
