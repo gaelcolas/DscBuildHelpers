@@ -11,9 +11,9 @@ BeforeDiscovery {
     Write-Build DarkGray "Found $($datum.Config.ToHashTable().Count) tests in configuration data."
     $allNodes = Get-Content -Path $here\Assets\AllNodes.yml -Raw | ConvertFrom-Yaml
 
-    Write-Host 'Reading DSC Resource metadata for supporting CIM based DSC parameters...'
-    Initialize-DscResourceMetaInfo -ModulePath $RequiredModulesDirectory
-    Write-Host 'Done'
+    #Write-Host 'Reading DSC Resource metadata for supporting CIM based DSC parameters...'
+    #Initialize-DscResourceMetaInfo -ModulePath $RequiredModulesDirectory
+    #Write-Host 'Done'
 
     <#
     $global:configurationData = @{
