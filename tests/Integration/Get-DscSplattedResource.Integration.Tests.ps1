@@ -80,6 +80,7 @@ configuration TestConfig {
         $dscConfiguration = $dscConfiguration.Replace('<DscResourceName>', $dscResourceName)
         $dscConfiguration = $dscConfiguration.Replace('<ConfigPath>', $configPath)
 
+        $data = $configurationData.Datum.Config.$configPath
         Invoke-Expression -Command $dscConfiguration
 
         {
