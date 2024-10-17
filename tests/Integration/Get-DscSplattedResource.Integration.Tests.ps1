@@ -8,7 +8,7 @@ BeforeDiscovery {
     Import-Module -Name datum
 
     $datum = New-DatumStructure -DefinitionFile $here\Assets\Datum.yml
-    #Write-Build DarkGray "Found $($datum.Config.ToHashTable().Count) tests in configuration data."
+    Write-Host "Found $($datum.Config.ToHashTable().Count) tests in configuration data." -ForegroundColor Magenta
     $allNodes = Get-Content -Path $here\Assets\AllNodes.yml -Raw | ConvertFrom-Yaml
 
     #Write-Host 'Reading DSC Resource metadata for supporting CIM based DSC parameters...'
