@@ -10,12 +10,12 @@ BeforeDiscovery {
     Write-Host 'Loading configuration data: 0'
     $datum = New-DatumStructure -DefinitionFile $here\Assets\Datum.yml
     Write-Host "Datum Object Type: $($datum.GetType().FullName)"
-    if ($null -eq $datum)
+    if ($datum.Count -eq 0)
     {
         Start-Sleep -Seconds 1
         Write-Host 'Loading configuration data: 1'
         $datum = New-DatumStructure -DefinitionFile $here\Assets\Datum.yml
-        if ($null -eq $datum)
+        if ($datum.Count -eq 0)
         {
             Start-Sleep -Seconds 1
             Write-Host 'Loading configuration data: 2'
