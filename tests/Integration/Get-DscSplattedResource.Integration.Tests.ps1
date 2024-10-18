@@ -38,7 +38,7 @@ BeforeDiscovery {
     $finalTestCases += @{
         AllDscResources      = $DscResources.Name
         FilteredDscResources = $DscResources | Where-Object Name -NotIn $skippedDscResources
-        TestCaseCount        = ($testCases | Where-Object Skip -eq $false).Count
+        TestCaseCount        = ($testCases | Where-Object Skip -EQ $false).Count
     }
 }
 
@@ -80,8 +80,22 @@ configuration TestConfig {
         $dscConfiguration = $dscConfiguration.Replace('<DscResourceName>', $dscResourceName)
         $dscConfiguration = $dscConfiguration.Replace('<ConfigPath>', $configPath)
 
+        Write-Host 'Loading configuration data: 0'
         $data = $configurationData.Datum.Config.$configPath
-        Write-Host "Content of data:" -ForegroundColor Magenta
+        if ($null -eq $data)
+        {
+            Start-Sleep -Seconds 1
+            Write-Host 'Loading configuration data: 1'
+            $data = $configurationData.Datum.Config.$configPath
+            if ($null -eq $data)
+            {
+                Start-Sleep -Seconds 1
+                Write-Host 'Loading configuration data: 2'
+                $data = $configurationData.Datum.Config.$configPath
+            }
+        }
+
+        Write-Host 'Content of data:' -ForegroundColor Magenta
         $dataJson = $data | ConvertTo-Json -Depth 10
         Write-Host -------------------------------------------------------- -ForegroundColor Magenta
         $dataJson | Measure-Object -Line -Character -Word | Out-String | Write-Host -ForegroundColor Magenta
