@@ -82,7 +82,12 @@ configuration TestConfig {
 
         $data = $configurationData.Datum.Config.$configPath
         Write-Host "Content of data:" -ForegroundColor Magenta
-        $data | ConvertTo-Json -Depth 10 | Measure-Object -Line -Character -Word | Out-String | Write-Host -ForegroundColor Magenta
+        $dataJson = $data | ConvertTo-Json -Depth 10
+        Write-Host -------------------------------------------------------- -ForegroundColor Magenta
+        $dataJson | Measure-Object -Line -Character -Word | Out-String | Write-Host -ForegroundColor Magenta
+        Write-Host -------------------------------------------------------- -ForegroundColor Magenta
+        $dataJson | Measure-Object -Line -Character -Word | Out-String | Write-Host -ForegroundColor Magenta
+        Write-Host -------------------------------------------------------- -ForegroundColor Magenta
         Invoke-Expression -Command $dscConfiguration
 
         {
