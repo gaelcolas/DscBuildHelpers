@@ -7,7 +7,21 @@ BeforeDiscovery {
 
     Import-Module -Name datum
 
+    Write-Host 'Loading configuration data: 0'
     $datum = New-DatumStructure -DefinitionFile $here\Assets\Datum.yml
+    if ($null -eq $datum)
+    {
+        Start-Sleep -Seconds 1
+        Write-Host 'Loading configuration data: 1'
+        $datum = New-DatumStructure -DefinitionFile $here\Assets\Datum.yml
+        if ($null -eq $datum)
+        {
+            Start-Sleep -Seconds 1
+            Write-Host 'Loading configuration data: 2'
+            $datum = New-DatumStructure -DefinitionFile $here\Assets\Datum.yml
+        }
+    }
+
     $allNodes = Get-Content -Path $here\Assets\AllNodes.yml -Raw | ConvertFrom-Yaml
 
     Write-Host 'Reading DSC Resource metadata for supporting CIM based DSC parameters...'
@@ -38,7 +52,7 @@ BeforeDiscovery {
     $finalTestCases += @{
         AllDscResources      = $DscResources.Name
         FilteredDscResources = $DscResources | Where-Object Name -NotIn $skippedDscResources
-        TestCaseCount        = ($testCases | Where-Object Skip -EQ $false).Count
+        TestCaseCount        = ($testCases | Where-Object Skip -eq $false).Count
     }
 }
 
@@ -80,27 +94,13 @@ configuration TestConfig {
         $dscConfiguration = $dscConfiguration.Replace('<DscResourceName>', $dscResourceName)
         $dscConfiguration = $dscConfiguration.Replace('<ConfigPath>', $configPath)
 
-        Write-Host 'Loading configuration data: 0'
         $data = $configurationData.Datum.Config.$configPath
-        if ($null -eq $data)
-        {
-            Start-Sleep -Seconds 1
-            Write-Host 'Loading configuration data: 1'
-            $data = $configurationData.Datum.Config.$configPath
-            if ($null -eq $data)
-            {
-                Start-Sleep -Seconds 1
-                Write-Host 'Loading configuration data: 2'
-                $data = $configurationData.Datum.Config.$configPath
-            }
-        }
-
-        Write-Host 'Content of data:' -ForegroundColor Magenta
+        Write-Host "Content of data:" -ForegroundColor Magenta
         $dataJson = $data | ConvertTo-Json -Depth 10
         Write-Host -------------------------------------------------------- -ForegroundColor Magenta
         $dataJson | Measure-Object -Line -Character -Word | Out-String | Write-Host -ForegroundColor Magenta
         Write-Host -------------------------------------------------------- -ForegroundColor Magenta
-        $dataJson | Write-Host -ForegroundColor Magenta
+        $dataJson | Measure-Object -Line -Character -Word | Out-String | Write-Host -ForegroundColor Magenta
         Write-Host -------------------------------------------------------- -ForegroundColor Magenta
         Invoke-Expression -Command $dscConfiguration
 
