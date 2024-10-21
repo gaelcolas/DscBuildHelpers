@@ -57,6 +57,36 @@ stages:
   - stage: Test
     dependsOn: Build
     jobs:
+
+      - job: Test_HQRM
+        displayName: 'HQRM'
+        pool:
+          vmImage: 'windows-latest'
+        timeoutInMinutes: 0
+        steps:
+          - task: DownloadPipelineArtifact@2
+            displayName: 'Download Pipeline Artifact'
+            inputs:
+              buildType: 'current'
+              artifactName: $(buildArtifactName)
+              targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
+
+          - task: PowerShell@2
+            name: test
+            displayName: 'Run HQRM Test'
+            inputs:
+              filePath: './build.ps1'
+              arguments: '-Tasks hqrmtest'
+              pwsh: false
+
+          - task: PublishTestResults@2
+            displayName: 'Publish Test Results'
+            inputs:
+              testResultsFormat: 'NUnit'
+              testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
+              testRunTitle: 'HQRM'
+            condition: succeededOrFailed()
+
       - job: test_windows_ps
         displayName: 'Windows (Windows PowerShell 5)'
         timeoutInMinutes: 0
@@ -139,12 +169,14 @@ stages:
           vmImage: 'ubuntu-latest'
         timeoutInMinutes: 0
         steps:
+
           - pwsh: |
               $repositoryOwner,$repositoryName = $env:BUILD_REPOSITORY_NAME -split '/'
               echo "##vso[task.setvariable variable=RepositoryOwner;isOutput=true]$repositoryOwner"
               echo "##vso[task.setvariable variable=RepositoryName;isOutput=true]$repositoryName"
             name: dscBuildVariable
             displayName: 'Set Environment Variables'
+
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
             inputs:
@@ -172,6 +204,7 @@ stages:
               filePath: './build.ps1'
               arguments: '-tasks merge'
               pwsh: true
+
           - task: PublishCodeCoverageResults@1
             displayName: 'Publish Azure Code Coverage'
             inputs:
@@ -195,17 +228,20 @@ stages:
         contains(variables['System.TeamFoundationCollectionUri'], 'Synedgy')
       )
     jobs:
+
       - job: Deploy_Module
         displayName: 'Deploy Module'
         pool:
           vmImage: 'ubuntu-latest'
         steps:
+
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Build Artifact'
             inputs:
               buildType: 'current'
               artifactName: $(buildArtifactName)
               targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
+
           - task: PowerShell@2
             name: publishRelease
             displayName: 'Publish Release'
@@ -218,6 +254,7 @@ stages:
               GalleryApiToken: $(GalleryApiToken)
               ReleaseBranch: $(defaultBranch)
               MainGitBranch: $(defaultBranch)
+
           - task: PowerShell@2
             name: sendChangelogPR
             displayName: 'Send Changelog PR'
