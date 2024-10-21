@@ -8,9 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Updated build scripts.
+- Made build compatible with PowerShell 5 and 7.
 - Aligned dependencies with other related projects.
 - Aligned 'build.yml' with one from other related projects.
 - Aligned 'azure-pipelines' with one from other related projects.
+  - Build runs on PowerShell 5 and 7 now.
 - Set gitversion in Azure pipeline to 5.*.
 - Made code HQRM compliant and added HQRM tests.
 - Added Pester tests for 'Get-DscSplattedResource'.
