@@ -9,12 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated build scripts.
 - Aligned dependencies with other related projects.
-- Set gitversion in Azure pipeline to 5.*.
-- Use 'ModuleFast' in Azure pipeline.
 - Aligned 'build.yml' with one from other related projects.
-- Added dummy test.
-- Made code HQRM compliant.
+- Aligned 'azure-pipelines' with one from other related projects.
+- Set gitversion in Azure pipeline to 5.*.
+- Made code HQRM compliant and added HQRM tests.
 - Added Pester tests for 'Get-DscSplattedResource'.
+- Fixed a bug in 'Get-DscResourceProperty'
+- Added integration tests for 'Get-DscSplattedResource'.
+- Added datum test data for 'Get-DscSplattedResource'.
+- Added code coverage and code coverage merge.
 
 ## [0.2.2] - 2024-04-03
 
