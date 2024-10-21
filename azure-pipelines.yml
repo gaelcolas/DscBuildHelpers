@@ -58,7 +58,7 @@ stages:
     dependsOn: Build
     jobs:
       - job: test_windows_ps
-        displayName: 'Windows (Windows PowerShell 5.1)'
+        displayName: 'Windows (Windows PowerShell 5)'
         timeoutInMinutes: 0
         pool:
           vmImage: 'windows-latest'
@@ -84,13 +84,13 @@ stages:
             inputs:
               testResultsFormat: 'NUnit'
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
-              testRunTitle: 'Windows (Windows PowerShell 5.1)'
+              testRunTitle: Windows PowerShell 5
 
           - task: PublishPipelineArtifact@1
             displayName: 'Publish Test Artifact'
             inputs:
               targetPath: '$(buildFolderName)/$(testResultFolderName)/'
-              artifactName: 'CodeCoverageWinPS51'
+              artifactName: CodeCoverageWindowsPowerShell5_$(System.JobAttempt)
               parallel: true
 
       - job: test_ps
@@ -120,13 +120,13 @@ stages:
             inputs:
               testResultsFormat: 'NUnit'
               testResultsFiles: '$(buildFolderName)/$(testResultFolderName)/NUnit*.xml'
-              testRunTitle: 'Windows ( PowerShell 7)'
+              testRunTitle: PowerShell7
 
           - task: PublishPipelineArtifact@1
             displayName: 'Publish Test Artifact'
             inputs:
               targetPath: '$(buildFolderName)/$(testResultFolderName)/'
-              artifactName: 'CodeCoveragePS7'
+              artifactName: CodeCoveragePowerShell7_$(System.JobAttempt)
               parallel: true
 
       - job: Code_Coverage
@@ -156,14 +156,15 @@ stages:
             displayName: 'Download Test Artifact Windows (PS 5.1)'
             inputs:
               buildType: 'current'
-              artifactName: 'CodeCoverageWinPS51_$(System.JobAttempt)'
+              artifactName: CodeCoverageWindowsPowerShell5_$(System.JobAttempt)
               targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)'
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Test Artifact Windows (PS7)'
             inputs:
               buildType: 'current'
-              artifactName: 'CodeCoverageWinPS7_$(System.JobAttempt)'
+              artifactName: CodeCoveragePowerShell7_$(System.JobAttempt)
               targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)'
+
           - task: PowerShell@2
             name: merge
             displayName: 'Merge Code Coverage files'
