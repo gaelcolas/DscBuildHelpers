@@ -7,25 +7,7 @@ BeforeDiscovery {
 
     Import-Module -Name datum
 
-    Write-Host 'Loading configuration data: 0'
     $datum = New-DatumStructure -DefinitionFile $here\Assets\Datum.yml
-    Write-Host "Datum Object Type: $($datum.GetType().FullName)"
-    Write-Host "Datum Count: $($datum.Count)"
-    Write-Host "Content of datum:" -ForegroundColor Magenta
-    $datum | Out-String | Write-Host -ForegroundColor Magenta
-    if ($datum.Count -eq 0)
-    {
-        Start-Sleep -Seconds 1
-        Write-Host 'Loading configuration data: 1'
-        $datum = New-DatumStructure -DefinitionFile $here\Assets\Datum.yml
-        if ($datum.Count -eq 0)
-        {
-            Start-Sleep -Seconds 1
-            Write-Host 'Loading configuration data: 2'
-            $datum = New-DatumStructure -DefinitionFile $here\Assets\Datum.yml
-        }
-    }
-
     $allNodes = Get-Content -Path $here\Assets\AllNodes.yml -Raw | ConvertFrom-Yaml
 
     Write-Host 'Reading DSC Resource metadata for supporting CIM based DSC parameters...'
@@ -99,13 +81,6 @@ configuration TestConfig {
         $dscConfiguration = $dscConfiguration.Replace('<ConfigPath>', $configPath)
 
         $data = $configurationData.Datum.Config.$configPath
-        Write-Host "Content of data:" -ForegroundColor Magenta
-        $dataJson = $data | ConvertTo-Json -Depth 10
-        Write-Host -------------------------------------------------------- -ForegroundColor Magenta
-        $dataJson | Measure-Object -Line -Character -Word | Out-String | Write-Host -ForegroundColor Magenta
-        Write-Host -------------------------------------------------------- -ForegroundColor Magenta
-        $dataJson | Measure-Object -Line -Character -Word | Out-String | Write-Host -ForegroundColor Magenta
-        Write-Host -------------------------------------------------------- -ForegroundColor Magenta
         Invoke-Expression -Command $dscConfiguration
 
         {
@@ -134,14 +109,6 @@ Describe 'Final tests' -Tags FunctionalQuality {
         Write-Host "Number of compiled MOF files: $($mofFiles.Count)"
         $TestCaseCount | Should -Be $mofFiles.Count
 
-    }
-
-}
-
-Describe 'Dummy Test' {
-
-    It 'Always Passes' {
-        $true | Should -Be $true
     }
 
 }
