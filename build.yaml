@@ -23,7 +23,7 @@ Pester:
       StackTraceVerbosity: Full
       CIFormat: Auto
     CodeCoverage:
-      CoveragePercentTarget: 0 # Set to 0 to bypass
+      CoveragePercentTarget: 5 # Set to 0 to bypass
       OutputEncoding: ascii
       UseBreakpoints: false
     TestResult:

@@ -129,12 +129,12 @@ stages:
               artifactName: 'CodeCoveragePS7'
               parallel: true
 
-      # If no code coverage should be reported, then this entire removed:
       - job: Code_Coverage
         displayName: 'Publish Code Coverage'
         dependsOn:
           - test_windows_ps
           - test_ps
+        condition: succeededOrFailed()
         pool:
           vmImage: 'ubuntu-latest'
         timeoutInMinutes: 0
@@ -145,47 +145,41 @@ stages:
               echo "##vso[task.setvariable variable=RepositoryName;isOutput=true]$repositoryName"
             name: dscBuildVariable
             displayName: 'Set Environment Variables'
-
           - task: DownloadPipelineArtifact@2
-            displayName: 'Download Pipeline Artifact'
+            displayName: 'Download Build Artifact'
             inputs:
               buildType: 'current'
               artifactName: $(buildArtifactName)
-              targetPath: '$(Build.SourcesDirectory)/$(buildArtifactName)'
+              targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)'
 
           - task: DownloadPipelineArtifact@2
             displayName: 'Download Test Artifact Windows (PS 5.1)'
             inputs:
               buildType: 'current'
-              artifactName: 'CodeCoverageWinPS51'
+              artifactName: 'CodeCoverageWinPS51_$(System.JobAttempt)'
               targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)'
-
           - task: DownloadPipelineArtifact@2
-            displayName: 'Download Test Artifact Windows (PS 7)'
+            displayName: 'Download Test Artifact Windows (PS7)'
             inputs:
               buildType: 'current'
-              artifactName: 'CodeCoveragePS7'
+              artifactName: 'CodeCoverageWinPS7_$(System.JobAttempt)'
               targetPath: '$(Build.SourcesDirectory)/$(buildFolderName)/$(testResultFolderName)'
-
-          # Make sure to update build.yaml to support these tasks, then uncomment these tasks:
-          #- task: PowerShell@2
-          #  name: merge
-          #  displayName: 'Merge Code Coverage files'
-          #  inputs:
-          #    filePath: './build.ps1'
-          #    arguments: '-tasks merge'
-          #    pwsh: true
-          #- task: PublishCodeCoverageResults@1
-          #  displayName: 'Publish Azure Code Coverage'
-          #  inputs:
-          #    codeCoverageTool: 'JaCoCo'
-          #    summaryFileLocation: '$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml'
-          #    pathToSources: '$(Build.SourcesDirectory)/$(dscBuildVariable.RepositoryName)/'
-
-          # Uncomment if Codecov.io should be used (see docs at Codecov.io how to use and the required repository configuration).
-          #- script: |
-          #    bash <(curl -s https://codecov.io/bash) -f "./$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml"
-          #  displayName: 'Publish Code Coverage to Codecov.io'
+          - task: PowerShell@2
+            name: merge
+            displayName: 'Merge Code Coverage files'
+            inputs:
+              filePath: './build.ps1'
+              arguments: '-tasks merge'
+              pwsh: true
+          - task: PublishCodeCoverageResults@1
+            displayName: 'Publish Azure Code Coverage'
+            inputs:
+              codeCoverageTool: 'JaCoCo'
+              summaryFileLocation: '$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml'
+              pathToSources: '$(Build.SourcesDirectory)/$(dscBuildVariable.RepositoryName)/'
+          - script: |
+              bash <(curl -s https://codecov.io/bash) -f "./$(buildFolderName)/$(testResultFolderName)/JaCoCo_coverage.xml"
+            displayName: 'Upload to Codecov.io'
 
   - stage: Deploy
     dependsOn: Test
