@@ -3,7 +3,7 @@ BeforeDiscovery {
     $dscResources = Get-DscResource -Name MofBased*, ClassBased* -ErrorAction SilentlyContinue
     $here = $PSScriptRoot
 
-    $skippedDscResources = 'ClassBasedResource3', 'MofBasedResource2', 'MofBasedResource3'
+    $skippedDscResources = ''
 
     Import-Module -Name datum
 
@@ -38,7 +38,7 @@ BeforeDiscovery {
     $finalTestCases += @{
         AllDscResources      = $DscResources.Name
         FilteredDscResources = $DscResources | Where-Object Name -NotIn $skippedDscResources
-        TestCaseCount        = @($testCases | Where-Object Skip -eq $false).Count
+        TestCaseCount        = @($testCases | Where-Object Skip -EQ $false).Count
     }
 }
 
