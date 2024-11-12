@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Moved the DSC resource modules from `output\RequiredModules` to `\tests\Integration\Assets\DscResources\` and
+  updated the discovery in Get-DscSplattedResource.Integration.Tests.ps1.
+
+### Changed
+
 - Updated build scripts.
 - Made build compatible with PowerShell 5 and 7.
 - Aligned dependencies with other related projects.
