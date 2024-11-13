@@ -36,10 +36,12 @@ function Get-PropertiesData
         [Parameter(Mandatory = $true)]
         [string[]]$Path
     )
+
     $paths = foreach ($p in $Path)
     {
         "['$p']"
     }
+
     $pathValue = try
     {
         Invoke-Expression "`$Properties$($paths -join '')"

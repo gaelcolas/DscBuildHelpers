@@ -27,6 +27,8 @@ function Get-CimType
         Ensure that this variable is properly initialized and populated before calling this function.
     #>
 
+    [CmdletBinding()]
+    [OutputType([object])]
     param (
         [Parameter(Mandatory = $true)]
         [string]$DscResourceName,

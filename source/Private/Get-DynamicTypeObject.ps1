@@ -24,7 +24,6 @@ function Get-DynamicTypeObject
     #>
 
     [CmdletBinding()]
-
     param (
         [Parameter(Mandatory = $true)]
         [object]$Object

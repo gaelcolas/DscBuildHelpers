@@ -99,7 +99,7 @@ function Write-CimPropertyValue
         }
         else
         {
-            $property.PropertyType.FullName -notin $standardCimTypes.DotNetType
+            $property.PropertyType.FullName -notin $standardCimTypes.DotNetType -and $property.PropertyType.BaseType -ne [System.Enum]
         }
 
         $pathValue = Get-PropertiesData -Path ($Path + $property.Name)
