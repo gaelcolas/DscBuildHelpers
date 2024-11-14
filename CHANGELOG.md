@@ -5,6 +5,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Enabled all tests in 'Get-DscSplattedResource.Integration.Tests.ps1'.
+
+### Added
+
+- Added support for complex data types in MOF-based and class-based resources by
+  rewriting 'Get-DscSplattedResource' and adding these functions:
+  - 'Get-CimType'.
+  - 'Get-DynamicTypeObject'.
+  - 'Get-PropertiesData'.
+  - 'Write-CimProperty'.
+  - 'Write-CimPropertyValue'.
+  - 'Get-DscResourceProperty'.
+  - 'Initialize-DscResourceMetaInfo'.
+
 ## [0.2.3] - 2024-11-09
 
 ### Changed
