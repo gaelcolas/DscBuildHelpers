@@ -6,6 +6,7 @@ BeforeDiscovery {
     $skippedDscResources = ''
 
     Import-Module -Name datum
+    Import-Module -Name DscBuildHelpers -Force
 
     $datum = New-DatumStructure -DefinitionFile $here\Assets\Datum.yml
     $allNodes = Get-Content -Path $here\Assets\AllNodes.yml -Raw | ConvertFrom-Yaml
