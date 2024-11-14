@@ -3,6 +3,3 @@
 output/*
 !output/RequiredModules
 output/RequiredModules/*
-
-!output/RequiredModules/ClassBased
-!output/RequiredModules/MofBased

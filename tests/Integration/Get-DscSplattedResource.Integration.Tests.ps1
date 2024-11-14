@@ -1,7 +1,9 @@
 BeforeDiscovery {
 
-    $dscResources = Get-DscResource -Name MofBased*, ClassBased* -ErrorAction SilentlyContinue
     $here = $PSScriptRoot
+    $modulePath = Resolve-Path -Path $here\Assets\DscResources\ | Select-Object -ExpandProperty Path
+    $env:PSModulePath = "$modulePath;$($env:PSModulePath)"
+    $dscResources = Get-DscResource -Name MofBased*, ClassBased* -ErrorAction SilentlyContinue
 
     $skippedDscResources = ''
 
@@ -12,7 +14,7 @@ BeforeDiscovery {
     $allNodes = Get-Content -Path $here\Assets\AllNodes.yml -Raw | ConvertFrom-Yaml
 
     Write-Host 'Reading DSC Resource metadata for supporting CIM based DSC parameters...'
-    Initialize-DscResourceMetaInfo -ModulePath $RequiredModulesDirectory
+    Initialize-DscResourceMetaInfo -ModulePath $modulePath
     Write-Host 'Done'
 
     $global:configurationData = @{
