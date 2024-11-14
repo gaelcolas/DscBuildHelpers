@@ -35,8 +35,10 @@ function Get-DscCimInstanceReference
         Initialize-DscResourceMetaInfo
         Get-DscSplattedResource
     #>
+
     [CmdletBinding()]
     [OutputType([ScriptBlock])]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingWriteHost', '', Justification = 'For debugging purposes')]
     param (
         [Parameter(Mandatory = $true)]
         [string]
@@ -55,8 +57,8 @@ function Get-DscCimInstanceReference
     {
         if ($allDscResourcePropertiesTable.ContainsKey("$($ResourceName)-$($ParameterName)"))
         {
-            $p = $allDscResourcePropertiesTable."$($ResourceName)-$($ParameterName)"
-            $typeConstraint = $p.TypeConstraint -replace '\[\]', ''
+            $property = $allDscResourcePropertiesTable."$($ResourceName)-$($ParameterName)"
+            $typeConstraint = $property.TypeConstraint -replace '\[\]', ''
             Get-DscSplattedResource -ResourceName $typeConstraint -Properties $Data -NoInvoke
         }
     }
