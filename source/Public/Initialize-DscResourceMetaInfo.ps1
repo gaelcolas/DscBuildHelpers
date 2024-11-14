@@ -74,7 +74,7 @@ function Initialize-DscResourceMetaInfo
     $modulesWithDscResources = $allDscResources | Select-Object -ExpandProperty ModuleName -Unique
     $modulesWithDscResources = $allModules | Where-Object Name -In $modulesWithDscResources
 
-    $standardCimTypes = Get-StandardCimType
+    $script:standardCimTypes = Get-StandardCimType
 
     $script:allDscResourcePropertiesTable = @{}
     $script:allDscSchemaClasses = @()
@@ -88,20 +88,17 @@ function Initialize-DscResourceMetaInfo
         $exceptionCollection = [System.Collections.ObjectModel.Collection[System.Exception]]::new()
         $schemaMofFile = [System.IO.Path]::ChangeExtension($dscResource.Path, 'schema.mof')
 
-        if (-not (Test-Path -Path $schemaMofFile))
+        if (Test-Path -Path $schemaMofFile)
         {
-            Write-Verbose -Message "The schema file '$schemaMofFile' could not be found. This is expected for class-based resources."
-            continue
+            $dscSchemaClasses = [Microsoft.PowerShell.DesiredStateConfiguration.Internal.DscClassCache]::ImportClasses($schemaMofFile, $dscModule, $exceptionCollection)
+            foreach ($dscSchemaClass in $dscSchemaClasses)
+            {
+                $dscSchemaClass | Add-Member -Name ModuleName -MemberType NoteProperty -Value $dscResource.ModuleName
+                $dscSchemaClass | Add-Member -Name ModuleVersion -MemberType NoteProperty -Value $dscResource.Version
+                $dscSchemaClass | Add-Member -Name ResourceName -MemberType NoteProperty -Value $dscResource.Name
+            }
+            $script:allDscSchemaClasses += $dscSchemaClasses
         }
-
-        $dscSchemaClasses = [Microsoft.PowerShell.DesiredStateConfiguration.Internal.DscClassCache]::ImportClasses($schemaMofFile, $dscModule, $exceptionCollection)
-        foreach ($dscSchemaClass in $dscSchemaClasses)
-        {
-            $dscSchemaClass | Add-Member -Name ModuleName -MemberType NoteProperty -Value $dscResource.ModuleName
-            $dscSchemaClass | Add-Member -Name ModuleVersion -MemberType NoteProperty -Value $dscResource.Version
-            $dscSchemaClass | Add-Member -Name ResourceName -MemberType NoteProperty -Value $dscResource.Name
-        }
-        $script:allDscSchemaClasses += $dscSchemaClasses
 
         $cimProperties = if ($ReturnAllProperties)
         {
@@ -110,7 +107,7 @@ function Initialize-DscResourceMetaInfo
         else
         {
             Get-DscResourceProperty -ModuleInfo $moduleInfo -ResourceName $dscResource.Name |
-                Where-Object TypeConstraint -NotIn $standardCimTypes.CimType
+                Where-Object TypeConstraint -NotIn $script:standardCimTypes.CimType
         }
 
         foreach ($cimProperty in $cimProperties)
