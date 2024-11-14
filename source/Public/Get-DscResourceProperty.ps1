@@ -41,6 +41,7 @@ function Get-DscResourceProperty
     #>
 
     [CmdletBinding()]
+    [OutputType([pscustomobject])]
     param (
         [Parameter(Mandatory = $true, ParameterSetName = 'ModuleInfo')]
         [System.Management.Automation.PSModuleInfo]
@@ -103,7 +104,7 @@ function Get-DscResourceProperty
 
             try
             {
-                $result.Type = Invoke-Expression "[$($TypeName)]"
+                $result.Type = Invoke-Command -ScriptBlock ([ScriptBlock]::Create("[$($TypeName)]"))
 
                 if ($result.Type.IsArray)
                 {
