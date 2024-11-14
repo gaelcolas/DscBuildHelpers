@@ -85,7 +85,6 @@ function Write-CimPropertyValue
 
     foreach ($property in $typeProperties)
     {
-        #function Get-IsCimType
         $isCimProperty = if ($property.GetType().Name -eq 'CimClassPropertyOfClass')
         {
             if ($property.CimType -in 'Instance', 'InstanceArray')
