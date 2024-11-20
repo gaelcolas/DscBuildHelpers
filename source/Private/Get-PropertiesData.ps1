@@ -34,7 +34,8 @@ function Get-PropertiesData
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
-        [string[]]$Path
+        [string[]]
+        $Path
     )
 
     $paths = foreach ($p in $Path)

@@ -26,7 +26,8 @@ function Get-DynamicTypeObject
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
-        [object]$Object
+        [object]
+        $Object
     )
 
     if ($Object.ElementType)

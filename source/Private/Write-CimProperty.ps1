@@ -38,16 +38,20 @@ function Write-CimProperty
     [CmdletBinding()]
     param (
         [Parameter(Mandatory = $true)]
-        [System.Text.StringBuilder]$StringBuilder,
+        [System.Text.StringBuilder]
+        $StringBuilder,
 
         [Parameter(Mandatory = $true)]
-        [object]$CimProperty,
+        [object]
+        $CimProperty,
 
         [Parameter(Mandatory = $true)]
-        [string[]]$Path,
+        [string[]]
+        $Path,
 
         [Parameter(Mandatory = $true)]
-        [string]$ResourceName
+        [string]
+        $ResourceName
     )
 
     $null = $StringBuilder.Append("$($CimProperty.Name) = ")

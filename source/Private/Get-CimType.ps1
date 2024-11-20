@@ -31,10 +31,12 @@ function Get-CimType
     [OutputType([object])]
     param (
         [Parameter(Mandatory = $true)]
-        [string]$DscResourceName,
+        [string]
+        $DscResourceName,
 
         [Parameter(Mandatory = $true)]
-        [string]$PropertyName
+        [string]
+        $PropertyName
     )
 
     $cimType = $allDscResourcePropertiesTable."$ResourceName-$PropertyName"
