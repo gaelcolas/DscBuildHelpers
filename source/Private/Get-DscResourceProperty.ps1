@@ -102,7 +102,7 @@ function Get-DscResourceProperty
                 IsArray     = $false
             }
 
-            $result.Type = [ScriptBlock]::Create("`$TypeName -as [type]").Invoke()[0]
+            $result.Type = $TypeName -as [type]
 
             if ($null -eq $result.Type)
             {
