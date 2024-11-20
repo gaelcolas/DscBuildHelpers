@@ -102,19 +102,17 @@ function Get-DscResourceProperty
                 IsArray     = $false
             }
 
-            try
-            {
-                $result.Type = Invoke-Command -ScriptBlock ([ScriptBlock]::Create("[$($TypeName)]"))
+            $result.Type = [ScriptBlock]::Create("`$TypeName -as [type]").Invoke()[0]
 
-                if ($result.Type.IsArray)
-                {
-                    $result.ElementType = $result.Type.GetElementType().FullName
-                    $result.IsArray = $true
-                }
-            }
-            catch
+            if ($null -eq $result.Type)
             {
                 Write-Verbose "The type '$TypeName' could not be resolved."
+            }
+
+            if ($result.Type.IsArray)
+            {
+                $result.ElementType = $result.Type.GetElementType().FullName
+                $result.IsArray = $true
             }
 
             return $result

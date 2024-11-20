@@ -6,7 +6,7 @@ function Get-PropertiesData
 
     .DESCRIPTION
         The Get-PropertiesData function retrieves the value of a specified property path from a global properties variable.
-        It constructs the path dynamically and uses Invoke-Command to evaluate the path and return the value.
+        It constructs the path dynamically and uses it to get and return the value.
         This function is useful for accessing nested properties in a dynamic and flexible manner.
 
     .PARAMETER Path
@@ -45,7 +45,7 @@ function Get-PropertiesData
 
     $pathValue = try
     {
-        Invoke-Command -ScriptBlock ([ScriptBlock]::Create("`$Properties$($paths -join '')"))
+        [ScriptBlock]::Create("`$Properties$($paths -join '')").Invoke()
     }
     catch
     {

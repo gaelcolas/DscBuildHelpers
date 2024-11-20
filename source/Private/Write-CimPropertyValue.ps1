@@ -54,7 +54,7 @@ function Write-CimPropertyValue
     $type = Get-DynamicTypeObject -Object $CimProperty
     if ($type.IsArray)
     {
-        if ($type -is [pscustomobject])
+        if ($type -is [System.Management.Automation.PSCustomObject])
         {
             $typeName = $type.TypeConstraint -replace '\[\]', ''
             $typeProperties = ($allDscSchemaClasses.Where({ $_.CimClassName -eq $typeName -and $_.ResourceName -eq $ResourceName })).CimClassProperties
@@ -67,7 +67,7 @@ function Write-CimPropertyValue
     }
     else
     {
-        if ($type -is [pscustomobject])
+        if ($type -is [System.Management.Automation.PSCustomObject])
         {
             $typeName = $type.TypeConstraint
             $typeProperties = ($allDscSchemaClasses.Where({ $_.CimClassName -eq $typeName -and $_.ResourceName -eq $ResourceName })).CimClassProperties

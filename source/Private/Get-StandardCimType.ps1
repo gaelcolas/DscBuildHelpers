@@ -64,7 +64,7 @@ function Get-StandardCimType
     try
     {
         $types.GetEnumerator() | ForEach-Object {
-            $null = Invoke-Command -ScriptBlock ([scriptblock]::Create("[$($_.Value)]")) -ErrorAction Stop
+            $null = [scriptblock]::Create("[$($_.Value)]").Invoke()
             [PSCustomObject]@{
                 CimType    = $_.Key
                 DotNetType = $_.Value
