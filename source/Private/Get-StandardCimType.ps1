@@ -61,18 +61,17 @@ function Get-StandardCimType
         MSFT_KeyValuePair     = 'System.Collections.Hashtable'
     }
 
-    try
-    {
-        $types.GetEnumerator() | ForEach-Object {
-            $null = [scriptblock]::Create("[$($_.Value)]").Invoke()
-            [PSCustomObject]@{
-                CimType    = $_.Key
-                DotNetType = $_.Value
-            }
+    $types.GetEnumerator() | ForEach-Object {
+        $type = $_.Value -as [type]
+
+        if ($null -eq $type)
+        {
+            Write-Error -Message "Failed to load CIM Types. The type '$($_.Value)' could not be resolved."
         }
-    }
-    catch
-    {
-        Write-Error -Message "Failed to load CIM Types. The error was: $($_.Exception.Message)"
+
+        [PSCustomObject]@{
+            CimType    = $_.Key
+            DotNetType = $_.Value
+        }
     }
 }
