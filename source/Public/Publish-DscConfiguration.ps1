@@ -22,7 +22,7 @@ function Publish-DscConfiguration
                     Write-Warning "The Pull Server configg '$PullServerWebConfig' cannot be found."
                     Write-Warning "`t Skipping Publishing Configuration MOFs"
                 }
-                elseif ($PSCmdlet.shouldprocess($_.BaseName))
+                elseif ($PSCmdlet.ShouldProcess($_.BaseName))
                 {
                     Write-Verbose -Message "Publishing $($_.Name)"
                     Publish-MofToPullServer -FullName $_.FullName -PullServerWebConfig $PullServerWebConfig

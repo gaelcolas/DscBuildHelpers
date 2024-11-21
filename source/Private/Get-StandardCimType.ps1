@@ -1,5 +1,29 @@
 function Get-StandardCimType
 {
+    <#
+    .SYNOPSIS
+        Retrieves the standard CIM types and their corresponding .NET types.
+
+    .DESCRIPTION
+        The Get-StandardCimType function retrieves a hashtable of standard Common Information Model (CIM) types and their corresponding .NET types.
+        This function is useful for mapping CIM types to .NET types when working with DSC resources.
+
+    .EXAMPLE
+        $cimTypes = Get-StandardCimType
+        This example retrieves the standard CIM types and their corresponding .NET types.
+
+    .OUTPUTS
+        System.Collections.Hashtable
+            A hashtable containing the standard CIM types as keys and their corresponding .NET types as values.
+
+    .NOTES
+        This function is used internally by other functions such as Get-CimType and Write-CimProperty to map CIM types to .NET types.
+    #>
+
+    [CmdletBinding()]
+    [OutputType([pscustomobject])]
+    param ()
+
     $types = @{
         Boolean               = 'System.Boolean'
         UInt8                 = 'System.Byte'
@@ -37,18 +61,17 @@ function Get-StandardCimType
         MSFT_KeyValuePair     = 'System.Collections.Hashtable'
     }
 
-    try
-    {
-        $types.GetEnumerator() | ForEach-Object {
-            $null = Invoke-Command -ScriptBlock ([scriptblock]::Create("[$($_.Value)]")) -ErrorAction Stop
-            [PSCustomObject]@{
-                CimType    = $_.Key
-                DotNetType = $_.Value
-            }
+    $types.GetEnumerator() | ForEach-Object {
+        $type = $_.Value -as [type]
+
+        if ($null -eq $type)
+        {
+            Write-Error -Message "Failed to load CIM Types. The type '$($_.Value)' could not be resolved."
         }
-    }
-    catch
-    {
-        Write-Error -Message "Failed to load CIM Types. The error was: $($_.Exception.Message)"
+
+        [PSCustomObject]@{
+            CimType    = $_.Key
+            DotNetType = $_.Value
+        }
     }
 }
