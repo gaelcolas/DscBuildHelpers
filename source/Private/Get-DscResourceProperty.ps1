@@ -109,7 +109,7 @@ function Get-DscResourceProperty
                 Write-Verbose "The type '$TypeName' could not be resolved."
             }
 
-            if ($result.Type.IsArray)
+            if ($result.Type -and $result.Type.IsArray)
             {
                 $result.ElementType = $result.Type.GetElementType().FullName
                 $result.IsArray = $true
