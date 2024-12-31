@@ -25,5 +25,8 @@
 
     xDscResourceDesigner         = 'latest'
     xPSDesiredStateConfiguration = 'latest'
+    NetworkingDsc                = 'latest'
+    ComputermanagementDsc        = 'latest'
+    Microsoft365DSC              = 'latest'
 
 }

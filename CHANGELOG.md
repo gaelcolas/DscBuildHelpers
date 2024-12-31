@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Enabled all tests in 'Get-DscSplattedResource.Integration.Tests.ps1'.
+- Improved module import handling and getting the module info from 'Get-Module' if
+  already imported.
 
 ### Added
 
@@ -20,6 +22,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 'Write-CimPropertyValue'.
   - 'Get-DscResourceProperty'.
   - 'Initialize-DscResourceMetaInfo'.
+- Add integration tests for Get-DscResourceProperty function.
+  - Add latest versions of' NetworkingDsc', 'ComputermanagementDsc', and Microsoft365DSC
+    to 'RequiredModules.psd1' for 'Get-DscResourceProperty' integration tests.
+
+### Fixed
+
+- Fixed null reference check for array type in 'Get-DscResourceProperty' function.
+  An error was thrown that the property 'IsArray' could not be found.
 
 ## [0.2.3] - 2024-11-09
 

@@ -56,13 +56,27 @@ function Get-DscResourceProperty
         $ResourceName
     )
 
-    $ModuleInfo = if ($ModuleName)
+    if ($ModuleName)
     {
-        Import-Module -Name $ModuleName -PassThru -Force
+        if (Get-Module -Name $ModuleName)
+        {
+            $ModuleInfo = Get-Module -Name $ModuleName
+        }
+        else
+        {
+            $ModuleInfo = Import-Module -Name $ModuleName -PassThru -Force
+        }
     }
     else
     {
-        Import-Module -Name $ModuleInfo.Name -PassThru -Force
+        if (Get-Module -Name $ModuleInfo.Name)
+        {
+            $ModuleInfo = Get-Module -Name $ModuleInfo.Name
+        }
+        else
+        {
+            $ModuleInfo = Import-Module -Name $ModuleInfo.Name -PassThru -Force
+        }
     }
 
     [Microsoft.PowerShell.DesiredStateConfiguration.Internal.DscClassCache]::ClearCache()
@@ -109,7 +123,7 @@ function Get-DscResourceProperty
                 Write-Verbose "The type '$TypeName' could not be resolved."
             }
 
-            if ($result.Type.IsArray)
+            if ($result.Type -and $result.Type.IsArray)
             {
                 $result.ElementType = $result.Type.GetElementType().FullName
                 $result.IsArray = $true
