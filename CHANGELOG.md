@@ -23,13 +23,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 'Get-DscResourceProperty'.
   - 'Initialize-DscResourceMetaInfo'.
 - Add integration tests for Get-DscResourceProperty function.
-  - Add latest versions of' NetworkingDsc', 'ComputermanagementDsc', and Microsoft365DSC
+  - Add latest versions of' NetworkingDsc', 'ComputermanagementDsc', and 'Microsoft365DSC'
     to 'RequiredModules.psd1' for 'Get-DscResourceProperty' integration tests.
+- Added integration test for 'Initialize-DscResourceMetaInfo' and added 'SharePointDsc'.
 
 ### Fixed
 
 - Fixed null reference check for array type in 'Get-DscResourceProperty' function.
   An error was thrown that the property 'IsArray' could not be found.
+- Fixed a bug in 'Initialize-DscResourceMetaInfo' when importing for example
+  'SharePointDsc', which returns 2 objects.
 
 ## [0.2.3] - 2024-11-09
 

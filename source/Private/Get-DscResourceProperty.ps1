@@ -64,7 +64,7 @@ function Get-DscResourceProperty
         }
         else
         {
-            $ModuleInfo = Import-Module -Name $ModuleName -PassThru -Force
+            $ModuleInfo = Import-Module -Name $ModuleName -PassThru -Force | Where-Object Name -eq $ModuleName
         }
     }
     else
@@ -75,7 +75,7 @@ function Get-DscResourceProperty
         }
         else
         {
-            $ModuleInfo = Import-Module -Name $ModuleInfo.Name -PassThru -Force
+            $ModuleInfo = Import-Module -Name $ModuleInfo.Name -PassThru -Force | Where-Object Name -eq $ModuleInfo.Name
         }
     }
 

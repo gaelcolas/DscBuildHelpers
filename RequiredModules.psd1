@@ -28,5 +28,6 @@
     NetworkingDsc                = 'latest'
     ComputermanagementDsc        = 'latest'
     Microsoft365DSC              = 'latest'
+    SharePointDsc                = 'latest'
 
 }
