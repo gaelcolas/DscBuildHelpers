@@ -1,4 +1,4 @@
-BeforeDiscovery {
+BeforeAll {
 
     $here = $PSScriptRoot
 
