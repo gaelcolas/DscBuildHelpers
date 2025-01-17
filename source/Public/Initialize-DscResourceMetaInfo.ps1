@@ -69,6 +69,19 @@ function Initialize-DscResourceMetaInfo
         }
     }
 
+    if (-not (Test-Path -Path $ModulePath))
+    {
+        Write-Error -Message "The module path '$ModulePath' does not exist."
+        return
+    }
+
+    $allModules = Get-ModuleFromFolder -ModuleFolder $ModulePath
+    if ($null -eq $allModules -or $allModules.Count -eq 0)
+    {
+        Write-Error -Message "No modules found in the module path '$ModulePath'."
+        return
+    }
+
     $allModules = Get-ModuleFromFolder -ModuleFolder $ModulePath
     $allDscResources = Get-DscResourceFromModuleInFolder -ModuleFolder $ModulePath -Modules $allModules
     $modulesWithDscResources = $allDscResources | Select-Object -ExpandProperty ModuleName -Unique
