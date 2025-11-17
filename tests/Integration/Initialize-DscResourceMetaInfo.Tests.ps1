@@ -57,7 +57,6 @@ Describe 'Initialize-DscResourceMetaInfo' -Tags FunctionalQuality {
 
         InModuleScope DscBuildHelpers -Parameters $param {
 
-
             $allDscResourceProperties.Count | Should -Be 10
             $allDscResourcePropertiesTable.Count | Should -Be 10
             $allDscSchemaClasses.Count | Should -Be 9

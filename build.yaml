@@ -3,7 +3,6 @@
 #          ModuleBuilder Configuration             #
 ####################################################
 
-
 Encoding: UTF8
 VersionedOutputDirectory: true
 BuiltModuleSubdirectory: module

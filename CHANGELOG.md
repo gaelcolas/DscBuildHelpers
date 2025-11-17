@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enabled all tests in 'Get-DscSplattedResource.Integration.Tests.ps1'.
 - Improved module import handling and getting the module info from 'Get-Module' if
   already imported.
+- Updated build scripts to Sampler 0.119.0-preview0005 for fixing issues with debugging.
 
 ### Added
 
