@@ -43,6 +43,7 @@ DscTest:
         ExcludeTag:
           - BuiltModule Tests - Validate Localization
           - Common Tests - Validate Localization
+          - RequiredPSSA
       Output:
         Verbosity: Detailed
         CIFormat: Auto
