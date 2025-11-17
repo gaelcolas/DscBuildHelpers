@@ -41,11 +41,8 @@ DscTest:
     Configuration:
       Filter:
         ExcludeTag:
-          - Common Tests - New Error-Level Script Analyzer Rules
+          - BuiltModule Tests - Validate Localization
           - Common Tests - Validate Localization
-          - Common Tests - Validate Example Files To Be Published
-          - Common Tests - Validate Example Files
-          - RequiredPSSA
       Output:
         Verbosity: Detailed
         CIFormat: Auto
