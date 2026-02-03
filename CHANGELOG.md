@@ -5,6 +5,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-02-03
+
 ### Changed
 
 - Enabled all tests in 'Get-DscSplattedResource.Integration.Tests.ps1'.
